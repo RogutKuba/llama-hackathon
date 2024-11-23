@@ -48,7 +48,7 @@ export async function GET(request: Request) {
   return NextResponse.json(contextChunks);
 }
 
-const NEXT_PUBLIC_URL = process.env.NEXT_PUBLIC_URL;
+const NEXT_PUBLIC_URL = process.env.NEXT_PUBLIC_URL ?? process.env.VERCEL_URL;
 if (!NEXT_PUBLIC_URL) {
   throw new Error('NEXT_PUBLIC_URL is not set');
 }
