@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateCrawler } from '@/query/contextChunk.query';
 import { useCurrentSiteId } from '@/lib/pathUtils';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 const formSchema = z.object({
   // files: z.array(z.instanceof(File)),
@@ -22,7 +23,7 @@ const formSchema = z.object({
   url: z.string().url(),
 });
 
-export const AddContextForm = () => {
+const AddContextForm = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -95,5 +96,18 @@ export const AddContextForm = () => {
         </div>
       </form>
     </Form>
+  );
+};
+
+export const AddContextDialog = () => {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button>Add Context</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <AddContextForm />
+      </DialogContent>
+    </Dialog>
   );
 };

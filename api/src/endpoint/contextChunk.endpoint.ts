@@ -4,7 +4,7 @@ import { createRoute, OpenAPIHono } from '@hono/zod-openapi';
 import { z } from 'zod';
 import { ErrorResponses } from './errors';
 import { contextChunkTable } from '../db/schema/contextChunk.db';
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 
 const getChunks = createRoute({
   method: 'get',
@@ -36,7 +36,8 @@ export const contextChunkRouter = new OpenAPIHono<AppContext>().openapi(
     const chunks = await db
       .select()
       .from(contextChunkTable)
-      .where(eq(contextChunkTable.siteId, siteId));
+      .where(eq(contextChunkTable.siteId, siteId))
+      .orderBy(desc(contextChunkTable.createdAt));
 
     return ctx.json(chunks);
   }

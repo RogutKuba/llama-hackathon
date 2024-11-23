@@ -1,6 +1,6 @@
 'use client';
 
-import { AddContextForm } from '@/components/AddContextForm';
+import { AddContextDialog } from '@/components/AddContextDialog';
 import { AppContainer } from '@/components/AppContainer';
 import { useContextChunks } from '@/query/contextChunk.query';
 
@@ -9,19 +9,37 @@ export default function SitePage() {
 
   return (
     <AppContainer>
-      <div className='flex flex-col gap-4'>
+      <div className='flex w-full justify-between'>
         <h1 className='text-2xl font-bold'>Add Context Chunks</h1>
-        <AddContextForm />
+        <div>
+          <AddContextDialog />
+        </div>
       </div>
 
-      <div className='flex flex-col gap-4'>
-        <h1 className='text-2xl font-bold'>Context Chunks</h1>
-        <div className='flex flex-col gap-4'>
+      <div className='flex flex-col gap-4 mt-4'>
+        <h1 className='text-lg font-medium'>Current Context Chunks</h1>
+        <div className='grid grid-cols-2 gap-4'>
           {contextChunks?.map((chunk) => (
-            <div key={chunk.id}>{chunk.content}</div>
+            <ContextChunk key={chunk.id} chunk={chunk} />
           ))}
         </div>
       </div>
     </AppContainer>
   );
 }
+
+const ContextChunk = ({
+  chunk,
+}: {
+  chunk: {
+    content: string;
+    sourceId: string;
+  };
+}) => {
+  return (
+    <div className='p-4 border rounded-md shadow-sm hover:shadow-md transition-shadow'>
+      <h2 className='text-lg font-bold'>{chunk.sourceId}</h2>
+      <div className='mt-2 text-gray-700'>{chunk.content.slice(0, 300)}...</div>
+    </div>
+  );
+};

@@ -42,6 +42,7 @@ next-env.d.ts
 
 # virtualenv
 env
+venv
 
 # python
 __pycache__

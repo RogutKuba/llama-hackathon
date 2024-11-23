@@ -6,6 +6,7 @@ import { firecrawlCrawl } from '../lib/firecrawl';
 import { Context } from 'hono';
 import { getDbConnection } from '../db/db';
 import { contextChunkTable } from '../db/schema/contextChunk.db';
+import { and, eq, inArray } from 'drizzle-orm';
 
 const startCrawlRoute = createRoute({
   method: 'post',
@@ -79,7 +80,15 @@ export const crawlerRouter = new OpenAPIHono<AppContext>()
   .openapi(webhookRoute, async (ctx) => {
     const { siteId } = ctx.req.valid('param');
     const body = ctx.req.valid('json');
-    await handleEvent({ ctx, siteId, event: body });
+
+    switch (body.type) {
+      case 'crawl.page':
+        await handlePageEvent({ ctx, siteId, event: body });
+        break;
+      case 'crawl.completed':
+        await handleCompletedEvent({ ctx, siteId, event: body });
+        break;
+    }
 
     return ctx.json({ success: true });
   });
@@ -109,7 +118,7 @@ type WebhookEvent = {
   error?: string;
 };
 
-const handleEvent = async (params: {
+const handlePageEvent = async (params: {
   ctx: Context<AppContext>;
   siteId: string;
   event: WebhookEvent;
@@ -151,4 +160,51 @@ const handleEvent = async (params: {
     .returning();
 
   console.log('res is ', res);
+};
+
+const handleCompletedEvent = async (params: {
+  ctx: Context<AppContext>;
+  siteId: string;
+  event: WebhookEvent;
+}) => {
+  const { ctx, siteId, event } = params;
+  const db = getDbConnection(ctx);
+
+  // when crawl is completed, send all the context chunks to ayush
+  const contextChunksToSend = await db
+    .select()
+    .from(contextChunkTable)
+    .where(
+      and(
+        eq(contextChunkTable.siteId, siteId),
+        eq(contextChunkTable.processed, false)
+      )
+    );
+
+  console.log('contextChunksToSend is ', contextChunksToSend);
+  if (contextChunksToSend.length === 0) {
+    return;
+  }
+
+  // send to ayush
+  const res = await fetch(ctx.env.EMBEDDING_API_URL, {
+    method: 'POST',
+    body: JSON.stringify({}),
+  });
+
+  if (!res.ok) {
+    console.error('failed to send to embedding api', res);
+    throw new Error('failed to send to embedding api');
+  }
+
+  // update the context chunks to processed
+  await db
+    .update(contextChunkTable)
+    .set({ processed: true })
+    .where(
+      inArray(
+        contextChunkTable.id,
+        contextChunksToSend.map((c) => c.id)
+      )
+    );
 };

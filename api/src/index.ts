@@ -11,6 +11,7 @@ export type AppContext = {
     DATABASE_URL: string;
     FIRECRAWL_API_KEY: string;
     FIRECRAWL_WEBHOOK_URL: string;
+    EMBEDDING_API_URL: string;
   };
   Variables: {};
 };
