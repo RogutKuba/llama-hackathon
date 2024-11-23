@@ -1,4 +1,7 @@
-import Image from 'next/image';
+'use client';
+
+import { AppContainer } from '@/components/AppContainer';
+import { HelperDialog } from '@/components/HelperDialog';
 
 export default function Home() {
   const buttons = Array.from({ length: 15 }, (_, index) => (
@@ -24,18 +27,18 @@ export default function Home() {
   ];
 
   return (
-    <div className='grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]'>
-      <main className='flex flex-col gap-8 row-start-2 items-center sm:items-start'>
-        <h1>Wow this is a cool site!!</h1>
-        <div className='flex gap-4 items-center flex-col sm:flex-row'>
-          {buttons}
-        </div>
-        <ul className='list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]'>
-          {listItems.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
-      </main>
-    </div>
+    <AppContainer className=''>
+      <HelperDialog />
+
+      <h1>Wow this is a cool site!!</h1>
+      <div className='flex gap-4 items-center flex-col sm:flex-row'>
+        {buttons}
+      </div>
+      <ul className='list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]'>
+        {listItems.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </AppContainer>
   );
 }
