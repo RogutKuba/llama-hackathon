@@ -37,7 +37,7 @@ class RagPipeline:
         return similar_embedding['matches'][0]['metadata']['text']
     
     """
-    Takes documents, embeds them, and uploads them to Pinecone so they can be used to run similarity search 
+    Takes documents, embeds them, and uploads them to Pinecone so they can be used to run similarity search
     """
     def chunking(self, documentation: List[str], website_url: str) -> Pinecone.Index:
         embeds = self.co_client.embed(

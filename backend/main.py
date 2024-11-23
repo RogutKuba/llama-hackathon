@@ -1,11 +1,14 @@
-from flask import Flask, requests, jsonify
+from flask import Flask, request, jsonify
+from rag import RagPipeline
 
 app = Flask(__name__)
 
-@app.route("/upload_document")
+@app.route("/upload_document", methods=['POST'])
 def handle_document():
-    
-    return "Hello World"
+    data = request.get_json()
+    array = data['array']
+
+    return jsonify({"" : ""}) # Return value
 
 
 if __name__ == '__main__':
