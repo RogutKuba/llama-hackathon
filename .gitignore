@@ -40,5 +40,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# virtualenv
+env
+
+# python
+__pycache__
+
 # make it ignore any __pycache in any dir:
 __pycache__/
