@@ -1,6 +1,20 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { ContextChunkEntity } from '@/db/schema/contextChunk.db';
 import { useCurrentSiteId } from '@/lib/pathUtils';
+
+type ContextChunkEntity = {
+  id: string;
+  createdAt: string;
+  content: string;
+  position: number;
+  sourceId: string;
+  sourceType: string;
+  processed: boolean;
+};
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+if (!API_URL) {
+  throw new Error('NEXT_PUBLIC_API_URL is not set');
+}
 
 export const useContextChunks = () => {
   const siteId = useCurrentSiteId();
@@ -8,7 +22,7 @@ export const useContextChunks = () => {
   const query = useQuery({
     queryKey: ['contextChunks'],
     queryFn: async () => {
-      const response = await fetch(`/api/context-chunk?siteId=${siteId}`);
+      const response = await fetch(`${API_URL}/context-chunk/${siteId}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -22,16 +36,15 @@ export const useContextChunks = () => {
   };
 };
 
-export const useCreateContextChunk = () => {
+export const useCreateCrawler = () => {
   const mutation = useMutation({
-    mutationFn: async (data: {
-      siteId: string;
-      documentationUrl: string;
-      rawText: string;
-    }) => {
-      const res = await fetch('/api/context-chunk', {
+    mutationFn: async (data: { siteId: string; url: string }) => {
+      const res = await fetch(`${API_URL}/crawler`, {
         method: 'POST',
         body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
       if (!res.ok) {
@@ -46,7 +59,7 @@ export const useCreateContextChunk = () => {
   });
 
   return {
-    createContextChunk: mutation.mutateAsync,
+    createCrawler: mutation.mutateAsync,
     ...mutation,
   };
 };

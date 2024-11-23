@@ -13,29 +13,29 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useCreateContextChunk } from '@/query/contextChunk.query';
+import { useCreateCrawler } from '@/query/contextChunk.query';
 import { useCurrentSiteId } from '@/lib/pathUtils';
 
 const formSchema = z.object({
   // files: z.array(z.instanceof(File)),
-  documentationUrl: z.string().url(),
-  rawText: z.string(),
+  // rawText: z.string(),
+  url: z.string().url(),
 });
 
 export const AddContextForm = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      documentationUrl: '',
-      rawText: '',
+      url: '',
+      // rawText: '',
     },
   });
 
-  const { createContextChunk } = useCreateContextChunk();
+  const { createCrawler } = useCreateCrawler();
   const siteId = useCurrentSiteId();
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    await createContextChunk({
+    await createCrawler({
       siteId,
       ...data,
     });
@@ -60,7 +60,7 @@ export const AddContextForm = () => {
 
         <FormField
           control={form.control}
-          name='documentationUrl'
+          name='url'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Documentation URL</FormLabel>
@@ -75,7 +75,7 @@ export const AddContextForm = () => {
           )}
         />
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name='rawText'
           render={({ field }) => (
@@ -88,7 +88,7 @@ export const AddContextForm = () => {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
         <div className='flex justify-end'>
           <Button type='submit'>Submit</Button>

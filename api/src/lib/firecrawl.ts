@@ -1,8 +1,3 @@
-const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY;
-if (!FIRECRAWL_API_KEY) {
-  throw new Error('FIRECRAWL_API_KEY is not set');
-}
-
 type FirecrawlScrapeResponse = {
   success: boolean;
   data: {
@@ -25,31 +20,39 @@ type FirecrawlScrapeResponse = {
   };
 };
 
-export const firecrawlScrape = async (
-  url: string
-): Promise<FirecrawlScrapeResponse> => {
-  const response = await fetch(`https://api.firecrawl.dev/v1/scrape`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${FIRECRAWL_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ url }),
-  });
-  return response.json() as Promise<FirecrawlScrapeResponse>;
-};
+// export const firecrawlScrape = async (
+//   url: string
+// ): Promise<FirecrawlScrapeResponse> => {
+//   const response = await fetch(`https://api.firecrawl.dev/v1/scrape`, {
+//     method: 'POST',
+//     headers: {
+//       Authorization: `Bearer ${FIRECRAWL_API_KEY}`,
+//       'Content-Type': 'application/json',
+//     },
+//     body: JSON.stringify({ url }),
+//   });
+//   return response.json() as Promise<FirecrawlScrapeResponse>;
+// };
 
-export const firecrawlCrawl = async (
-  url: string,
-  options?: { limit?: number; webhook?: string }
-): Promise<{ success: boolean; id: string; url: string }> => {
+export const firecrawlCrawl = async (params: {
+  url: string;
+  apiKey: string;
+  limit: number;
+  webhook: string;
+}): Promise<{ success: boolean; id: string; url: string }> => {
+  console.log('apiKey', params.apiKey);
+
   const response = await fetch(`https://api.firecrawl.dev/v1/crawl`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${FIRECRAWL_API_KEY}`,
+      Authorization: `Bearer ${params.apiKey}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ url, ...options }),
+    body: JSON.stringify({
+      url: params.url,
+      limit: params.limit,
+      webhook: params.webhook,
+    }),
   });
   return response.json();
 };
