@@ -83,10 +83,12 @@ export async function POST(request: Request) {
   }
 
   // if documentationUrl is provided, start firecrawl crawling
-  await firecrawlCrawl(documentationUrl, {
+  const crawl = await firecrawlCrawl(documentationUrl, {
     limit: 1,
     webhook: `${NEXT_PUBLIC_URL}/api/crawler-webhook/${siteId}`,
   });
+
+  console.log('crawl', crawl);
 
   return NextResponse.json({ success: true });
 }

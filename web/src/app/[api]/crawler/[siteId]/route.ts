@@ -43,6 +43,8 @@ export const POST = async (req: Request) => {
 
   // Check if the event is a page crawl event
   if (event.type === 'crawl.page' && event.data) {
+    console.log('event', event);
+
     try {
       // Save the scraped data to the context chunk table
       await saveToContextChunkTable({
@@ -72,6 +74,8 @@ const saveToContextChunkTable = async (params: {
   const { siteId, webhookEvent } = params;
 
   const markdown = webhookEvent.data?.[0]?.markdown;
+  const sourceId =
+    webhookEvent.data?.[0]?.metadata.sourceURL ?? webhookEvent.id;
 
   if (!markdown) {
     return;
@@ -84,7 +88,7 @@ const saveToContextChunkTable = async (params: {
     siteId,
     content: markdown,
     position: 0,
-    sourceId: webhookEvent.id,
+    sourceId,
     sourceType: 'website',
   });
 };

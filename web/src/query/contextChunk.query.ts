@@ -29,10 +29,16 @@ export const useCreateContextChunk = () => {
       documentationUrl: string;
       rawText: string;
     }) => {
-      await fetch('/api/add-context', {
+      const res = await fetch('/api/context-chunk', {
         method: 'POST',
         body: JSON.stringify(data),
       });
+
+      if (!res.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      return res.json();
     },
     meta: {
       SUCCESS_MESSAGE: 'Context chunk created successfully!',

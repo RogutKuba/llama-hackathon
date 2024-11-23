@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { UserButton } from '@clerk/nextjs';
+// import { UserButton } from '@clerk/nextjs';
 import { useSites } from '@/query/sites.query';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -38,9 +38,9 @@ export const Sidebar = () => {
         </ul>
       </div>
 
-      <div className='p-4 flex justify-center items-center'>
+      {/* <div className='p-4 flex justify-center items-center'>
         <UserButton showName />
-      </div>
+      </div> */}
     </nav>
   );
 };
