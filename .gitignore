@@ -9,6 +9,7 @@ node_modules
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+wrangler.toml
 
 # testing
 /coverage
@@ -44,3 +45,6 @@ env
 
 # python
 __pycache__
+
+# make it ignore any __pycache in any dir:
+__pycache__/
