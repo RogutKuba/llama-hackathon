@@ -1,9 +1,8 @@
 import { db } from '@/db/db';
 import { siteTable } from '@/db/schema/site.db';
-import { NextApiRequest, NextApiResponse } from 'next';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export const GET = async (_: NextApiRequest, res: NextApiResponse) => {
+export const GET = async (_: NextRequest) => {
   // Fetch projects for the user
   const sites = await db.select().from(siteTable);
 

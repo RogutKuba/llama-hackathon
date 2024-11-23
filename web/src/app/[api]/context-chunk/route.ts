@@ -8,7 +8,7 @@ import { db } from '@/db/db';
 import { eq } from 'drizzle-orm';
 import { firecrawlCrawl } from '@/lib/firecrawl';
 
-export const postParams = z.object({
+const postParams = z.object({
   siteId: z.string(),
   documentationUrl: z.string().url(),
   rawText: z.string(),
