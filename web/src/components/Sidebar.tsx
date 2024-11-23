@@ -1,19 +1,38 @@
 'use client';
 
 import React from 'react';
-import { UserButton, useUser } from '@clerk/nextjs';
+import { UserButton } from '@clerk/nextjs';
+import { useSites } from '@/query/sites.query';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
+
+const SidebarItemClassNames = {
+  base: 'w-full flex justify-normal items-center gap-x-2.5 rounded-md px-2 py-2 text-sm font-medium transition hover:bg-muted/70 hover:text-primary/70',
+  active: 'text-primary/70 bg-muted/70',
+  subItem: 'hover:bg-background bg-background',
+};
 
 export const Sidebar = () => {
-  const { user } = useUser();
+  const { sites } = useSites();
 
   return (
     <nav className='min-w-64 h-full min-h-screen flex flex-col justify-between bg-background border-r'>
       <div className='flex-grow p-4'>
-        <h2 className='text-xl font-bold mb-4'>Menu</h2>
+        <h2 className='text-xl font-bold mb-4'>Your sites</h2>
         <ul>
-          <li className='mb-2 hover:text-gray-400 cursor-pointer'>Home</li>
-          <li className='mb-2 hover:text-gray-400 cursor-pointer'>About</li>
-          <li className='mb-2 hover:text-gray-400 cursor-pointer'>Contact</li>
+          {sites?.map((site) => (
+            <Link href={`/sites/${site.id}`} key={site.id}>
+              <li
+                key={site.id}
+                className={cn(
+                  SidebarItemClassNames.base,
+                  'hover:cursor-pointer'
+                )}
+              >
+                {site.name}
+              </li>
+            </Link>
+          ))}
         </ul>
       </div>
 
