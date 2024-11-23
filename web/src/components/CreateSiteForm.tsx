@@ -30,8 +30,6 @@ export const CreateSiteForm = () => {
   const { createSite } = useCreateSite();
 
   const onSubmit = async (data: z.infer<typeof siteFormSchema>) => {
-    console.log(data);
-
     await createSite(data);
   };
 

@@ -1,4 +1,4 @@
-import { siteTable } from '@/db/schema/site.db';
+import { siteTable } from './site.db';
 import {
   text,
   pgTable,
