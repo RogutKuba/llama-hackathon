@@ -48,6 +48,11 @@ export async function GET(request: Request) {
   return NextResponse.json(contextChunks);
 }
 
+const NEXT_PUBLIC_URL = process.env.NEXT_PUBLIC_URL;
+if (!NEXT_PUBLIC_URL) {
+  throw new Error('NEXT_PUBLIC_URL is not set');
+}
+
 export async function POST(request: Request) {
   const body = await request.json();
   const parsedBody = postParams.safeParse(body);
@@ -80,7 +85,7 @@ export async function POST(request: Request) {
   // if documentationUrl is provided, start firecrawl crawling
   await firecrawlCrawl(documentationUrl, {
     limit: 1,
-    webhook: `${process.env.NEXT_PUBLIC_URL}/api/crawler-webhook/${siteId}`,
+    webhook: `${NEXT_PUBLIC_URL}/api/crawler-webhook/${siteId}`,
   });
 
   return NextResponse.json({ success: true });
