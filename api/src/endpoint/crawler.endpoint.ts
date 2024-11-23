@@ -189,7 +189,13 @@ const handleCompletedEvent = async (params: {
   // send to ayush
   const res = await fetch(ctx.env.EMBEDDING_API_URL, {
     method: 'POST',
-    body: JSON.stringify({}),
+    body: JSON.stringify(
+      contextChunksToSend.map((c) => ({
+        id: c.id,
+        content: c.content,
+        siteId,
+      }))
+    ),
   });
 
   if (!res.ok) {
