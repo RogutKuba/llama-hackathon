@@ -39,6 +39,21 @@ export const firecrawlScrape = async (
   return response.json() as Promise<FirecrawlScrapeResponse>;
 };
 
+export const firecrawlCrawl = async (
+  url: string,
+  options?: { limit?: number; webhook?: string }
+): Promise<{ success: boolean; id: string; url: string }> => {
+  const response = await fetch(`https://api.firecrawl.dev/v1/crawl`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${FIRECRAWL_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ url, ...options }),
+  });
+  return response.json();
+};
+
 /**
  * {
   "success": true,

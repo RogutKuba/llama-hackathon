@@ -9,7 +9,7 @@ export default function Home() {
     <AppContainer className=''>
       <HelperDialog />
 
-      <CreateSiteForm />
+      <h1>Welcome to Firecrawl</h1>
     </AppContainer>
   );
 }

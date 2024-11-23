@@ -13,9 +13,11 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useCreateContextChunk } from '@/query/contextChunk.query';
+import { useCurrentSiteId } from '@/lib/pathUtils';
 
 const formSchema = z.object({
-  files: z.array(z.instanceof(File)),
+  // files: z.array(z.instanceof(File)),
   documentationUrl: z.string().url(),
   rawText: z.string(),
 });
@@ -24,31 +26,25 @@ export const AddContextForm = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      files: [],
       documentationUrl: '',
       rawText: '',
     },
   });
 
+  const { createContextChunk } = useCreateContextChunk();
+  const siteId = useCurrentSiteId();
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log(data);
-
-    // have to add as formData because of the file upload
-    const formData = new FormData();
-    // formData.append('files', data.files);
-    formData.append('documentationUrl', data.documentationUrl);
-    formData.append('rawText', data.rawText);
-
-    await fetch('/api/add-context', {
-      method: 'POST',
-      body: JSON.stringify(data),
+    await createContextChunk({
+      siteId,
+      ...data,
     });
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-        <FormField
+        {/* <FormField
           control={form.control}
           name='files'
           render={({ field }) => (
@@ -60,7 +56,7 @@ export const AddContextForm = () => {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
         <FormField
           control={form.control}

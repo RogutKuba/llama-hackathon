@@ -18,7 +18,9 @@ export const Sidebar = () => {
   return (
     <nav className='min-w-64 h-full min-h-screen flex flex-col justify-between bg-background border-r'>
       <div className='flex-grow p-4'>
-        <h2 className='text-xl font-bold mb-4'>Your sites</h2>
+        <Link href='/sites/new'>
+          <h2 className='text-xl font-bold mb-4'>Add new site</h2>
+        </Link>
         <ul>
           {sites?.map((site) => (
             <Link href={`/sites/${site.id}`} key={site.id}>
