@@ -69,7 +69,7 @@ export const crawlerRouter = new OpenAPIHono<AppContext>()
     const crawl = await firecrawlCrawl({
       url,
       apiKey: ctx.env.FIRECRAWL_API_KEY,
-      limit: 20,
+      limit: 1,
       webhook: `${ctx.env.FIRECRAWL_WEBHOOK_URL}/${siteId}`,
     });
 
@@ -181,7 +181,6 @@ const handleCompletedEvent = async (params: {
       )
     );
 
-  console.log('contextChunksToSend is ', contextChunksToSend);
   if (contextChunksToSend.length === 0) {
     return;
   }

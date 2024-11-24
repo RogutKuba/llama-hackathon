@@ -25,11 +25,11 @@ export const getAction = async (params: {
     throw new Error('Failed to get action');
   }
 
-  const actionResponse = await response.json();
+  const actionResponse = (await response.json()) as ActionResponse;
   // const { action, x, y } = actionResponse;
 
-  const { x, y } = actionResponse.result[1];
-  clickAction({ x, y });
+  // const { x, y } = actionResponse.result[1];
+  // clickAction({ x, y });
 
   // switch (actionResponse.action) {
   //   case 'click':
