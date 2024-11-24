@@ -60,14 +60,14 @@ export default function Home() {
 
       <h1>Welcome to Firecrawl</h1>
 
-      {sentData && (
+      {/* {sentData && (
         <div>
           <h2>Sent Data</h2>
           <p>{sentData.prompt}</p>
 
           <img src={sentData.screenshot} alt='screenshot' />
         </div>
-      )}
+      )} */}
 
       <div className='flex gap-4'>
         <Button>Nothing button</Button>

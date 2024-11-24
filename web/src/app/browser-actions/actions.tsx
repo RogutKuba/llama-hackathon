@@ -1,7 +1,9 @@
 export const clickAction = (params: { x: number; y: number }) => {
   // click on the window in the x,y position
   const elemToClick = document.elementFromPoint(params.x, params.y);
+  console.log('elemToClick', elemToClick);
   if (elemToClick instanceof HTMLElement) {
+    console.log('clicking');
     elemToClick.click();
   }
 };
