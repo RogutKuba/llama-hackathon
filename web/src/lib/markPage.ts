@@ -1,25 +1,4 @@
-const customCSS = `
-::-webkit-scrollbar {
-    width: 10px;
-}
-::-webkit-scrollbar-track {
-    background: #27272a;
-}
-::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 0.375rem;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-`;
-
-function unmarkPage() {
-  const styleTag = document.createElement('style');
-  styleTag.textContent = customCSS;
-  document.head.append(styleTag);
-
-  let labels: any[] = [];
+function unmarkPage(labels: any[]) {
   // Unmark page logic
   for (const label of labels) {
     document.body.removeChild(label);
@@ -27,22 +6,9 @@ function unmarkPage() {
   labels = [];
 }
 
-function markPage(): {
-  x: number;
-  y: number;
-  type: string;
-  text: string;
-  ariaLabel: string;
-}[] {
-  const styleTag = document.createElement('style');
-  styleTag.textContent = customCSS;
-  document.head.append(styleTag);
-
+function markPage() {
   let labels: any[] = [];
-
-  unmarkPage();
-
-  const bodyRect: DOMRect = document.body.getBoundingClientRect();
+  // const bodyRect: DOMRect = document.body.getBoundingClientRect();
 
   let items: {
     element: Element;
@@ -172,9 +138,16 @@ function markPage(): {
     }))
   );
 
-  return coordinates;
+  return {
+    coordinates,
+    labels,
+  };
 }
 
 export const annotatePage = () => {
-  markPage();
+  return markPage();
+};
+
+export const unannotatePage = (labels: any[]) => {
+  unmarkPage(labels);
 };

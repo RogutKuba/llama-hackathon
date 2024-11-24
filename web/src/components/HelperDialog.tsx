@@ -12,6 +12,7 @@ import { getAction } from '@/query/action.query';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { takeWindowScreenshot } from '@/lib/screenshot';
+import { annotatePage, unannotatePage } from '@/lib/markPage';
 
 type CursorParams = {
   start: { x: number; y: number };
@@ -92,8 +93,13 @@ export const HelperDialog = (props: HelperDialogProps) => {
       // await 200ms
       await new Promise((resolve) => setTimeout(resolve, 200));
 
+      // annotate the page
+      const { labels } = annotatePage();
+
       console.log('taking screenshot');
       const img = await takeWindowScreenshot();
+
+      unannotatePage(labels);
 
       await getFirstAction({
         screenshot: img,
