@@ -77,7 +77,6 @@ export default function Home() {
         <Button onClick={handleTakeScreenshot}>Take Screenshot</Button>
       </div>
 
-      {img && <img src={img} alt='screenshot' />}
       <div className='flex flex-wrap gap-4 mt-4'>
         {prefixes.map(({ prefix, word }, index) => (
           <div key={prefix} className='p-4 border border-gray-300 rounded-md'>

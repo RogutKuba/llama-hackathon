@@ -108,6 +108,10 @@ export const HelperDialog = (props: HelperDialogProps) => {
     }
   };
 
+  const loopActions = async () => {
+    console.log('loopActions');
+  };
+
   return (
     <>
       {/* {loading && <div className='fixed inset-0 bg-black/20 z-50' />} */}
