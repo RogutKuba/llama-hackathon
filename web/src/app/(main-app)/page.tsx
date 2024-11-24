@@ -92,7 +92,7 @@ export default function Home() {
             </h2>
 
             <Button onClick={() => setSelectedPrefix(prefix)}>
-              Button {index}
+              Button {String.fromCharCode(65 + index)}
             </Button>
           </div>
         ))}

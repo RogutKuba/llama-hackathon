@@ -41,6 +41,16 @@ export const getAction = async (params: {
 
   const actionResponse = (await response.json()) as ActionResponse;
 
+  if (actionResponse.status === 'error') {
+    throw new Error('Failed to get action!');
+  }
+
+  console.log('actionResponse', actionResponse);
+  // if action is close, return null
+  if (actionResponse.result.action.toLowerCase().includes('answer')) {
+    return null;
+  }
+
   // const actionResponse = {
   //   result: {
   //     action: 'click',
@@ -52,16 +62,6 @@ export const getAction = async (params: {
   //   status: 'success',
   // } as ActionResponse;
   console.log('actionResponse', actionResponse);
-
-  // const redBox = document.createElement('div');
-  // redBox.style.position = 'absolute';
-  // redBox.style.left = `${x}px`;
-  // redBox.style.top = `${y}px`;
-  // redBox.style.width = '10px';
-  // redBox.style.height = '10px';
-  // redBox.style.backgroundColor = 'red';
-  // redBox.style.zIndex = '1000';
-  // document.body.appendChild(redBox);
 
   return actionResponse;
 };
