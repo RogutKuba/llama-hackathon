@@ -33,6 +33,8 @@ Key Guidelines You MUST follow:
 * Web Browsing Guidelines *
 1) Don't interact with useless web elements like Login, Sign-in, donation that appear in Webpages
 2) Select strategically to minimize time wasted.
+3) If you can't find the requested element, scroll up or down to find it.
+4) If you really don't know what to do, don't give up and take ANSWER action
 
 Your reply should strictly follow the format:
 
