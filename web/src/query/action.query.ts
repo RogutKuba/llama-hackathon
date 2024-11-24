@@ -3,6 +3,7 @@ import {
   scrollAction,
   typeAction,
 } from '@/app/browser-actions/actions';
+import { setStorageState } from '@/lib/checkRefresh';
 import { useTrajectory } from '@/lib/traj';
 
 export type ActionResponse = {
@@ -33,6 +34,11 @@ export const getAction = async (params: {
 
   const trajectory = getTrajectory();
   console.log('trajectories', trajectory);
+
+  setStorageState({
+    prompt: params.user_prompt,
+    wasRunning: true,
+  });
 
   const response = await fetch('http://localhost:8000/search', {
     method: 'POST',

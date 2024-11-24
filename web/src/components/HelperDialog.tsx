@@ -19,6 +19,7 @@ import { takeWindowScreenshot } from '@/lib/screenshot';
 import { annotatePage, unannotatePage } from '@/lib/markPage';
 import { CustomCursor } from '@/app/browser-actions/CustomCursor';
 import { useTrajectory } from '@/lib/traj';
+import { useCheckRefresh } from '@/lib/checkRefresh';
 
 type CursorParams = {
   start: { x: number; y: number };
@@ -29,16 +30,19 @@ type CursorParams = {
   nextActionCallback: () => void;
 };
 
-type HelperDialogProps = {
-  setSentData: (params: { prompt: string; screenshot: string }) => void;
-};
-
-export const HelperDialog = (props: HelperDialogProps) => {
-  const { setSentData } = props;
-
+export const HelperDialog = () => {
   const [open, setOpen] = useState(false);
   const [prompt, setPrompt] = useState('');
   const { clearTrajectory } = useTrajectory();
+
+  useCheckRefresh({
+    wasRefreshedCallback: async (params) => {
+      console.log('wasRefreshedCallback', params);
+      setPrompt(params.prompt);
+
+      await takeNextAction();
+    },
+  });
 
   const [cursorParams, setCursorParams] = useState<CursorParams | null>(null);
 
@@ -79,11 +83,6 @@ export const HelperDialog = (props: HelperDialogProps) => {
     }
 
     console.log('getting first action');
-
-    setSentData({
-      prompt: params.prompt,
-      screenshot: params.screenshot,
-    });
 
     const actionResponse = await getAction({
       user_prompt: params.prompt,

@@ -51,14 +51,9 @@ export default function Home() {
     setImg(img);
   };
 
-  const [sentData, setSentData] = useState<{
-    prompt: string;
-    screenshot: string;
-  } | null>(null);
-
   return (
     <AppContainer className=''>
-      <HelperDialog setSentData={setSentData} />
+      {/* <HelperDialog setSentData={setSentData} /> */}
 
       <h1>Welcome to Firecrawl</h1>
 

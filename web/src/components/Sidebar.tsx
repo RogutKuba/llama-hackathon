@@ -5,6 +5,7 @@ import React from 'react';
 import { useSites } from '@/query/sites.query';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 const SidebarItemClassNames = {
   base: 'w-full flex justify-normal items-center gap-x-2.5 rounded-md px-2 py-2 text-sm font-medium transition hover:bg-muted/70 hover:text-primary/70',
@@ -19,7 +20,7 @@ export const Sidebar = () => {
     <nav className='min-w-64 h-full min-h-screen flex flex-col justify-between bg-background border-r'>
       <div className='flex-grow p-4'>
         <Link href='/sites/new'>
-          <h2 className='text-xl font-bold mb-4'>Add new site</h2>
+          <Button className='text-xl p-4'>Add new site</Button>
         </Link>
         <ul>
           {sites?.map((site) => (

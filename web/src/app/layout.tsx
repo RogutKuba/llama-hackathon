@@ -2,6 +2,7 @@
 
 import localFont from 'next/font/local';
 import './globals.css';
+import { HelperDialog } from '@/components/HelperDialog';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased relative w-screen flex`}
       >
+        <HelperDialog />
         {children}
       </body>
     </html>
