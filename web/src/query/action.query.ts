@@ -127,6 +127,7 @@ export const performActionInDom = async (actionResponse: ActionResponse) => {
       typeAction({ text: textToType, x, y });
       break;
     default:
-      throw new Error(`Unknown action: ${actionResponse}`);
+      console.error('Unknown action', action);
+    // throw new Error(`Unknown action: ${actionResponse}`);
   }
 };

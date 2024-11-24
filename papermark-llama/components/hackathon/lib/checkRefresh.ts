@@ -3,9 +3,7 @@
  * IF THE WINDOW HREF URL IS THE SAME AS THE LAST ONE, THEN DO NOT FETCH NEW ACTIONS
  * IF THE WINDOW HREF URL IS DIFFERENT, THEN START THE LOOP OF FETCHING NEW ACTIONS
  */
-
-import { ActionResponse } from '@/query/action.query';
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 type StorageState = {
   // lastActionResponse: ActionResponse;
@@ -14,7 +12,7 @@ type StorageState = {
   lastWindowHref: string;
 };
 
-const STORAGE_KEY = 'storage-state';
+const STORAGE_KEY = "storage-state";
 
 const getStorageState = (): StorageState | null => {
   const storageState = localStorage.getItem(STORAGE_KEY);
@@ -40,21 +38,38 @@ export const useCheckRefresh = (params: {
   wasRefreshedCallback: (params: { prompt: string }) => Promise<void>;
 }) => {
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      console.log('window is undefined');
+    if (typeof window === "undefined") {
+      console.log("window is undefined");
       return;
     }
 
     const currentWindowHref = window.location.href;
-    console.log('currentWindowHref', currentWindowHref);
+    console.log("currentWindowHref", currentWindowHref);
 
     const storageState = getStorageState();
-    console.log('storageState', storageState);
+    console.log("storageState", storageState);
     if (!storageState) {
+      setStorageState({
+        prompt: "",
+        wasRunning: false,
+      });
+
       return;
     }
 
     if (storageState.lastWindowHref === currentWindowHref) {
+      setStorageState({
+        prompt: storageState.prompt,
+        wasRunning: storageState.wasRunning,
+      });
+      return;
+    }
+
+    if (!storageState.wasRunning) {
+      setStorageState({
+        prompt: storageState.prompt,
+        wasRunning: true,
+      });
       return;
     }
 

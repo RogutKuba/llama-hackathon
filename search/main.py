@@ -67,7 +67,7 @@ def prompt_llm(prompt, base64_image):
 
 
 async def search_action(user_prompt: str, coordinates: list[dict], screenshot: str, trajectory: list):
-    ALL_ACTIONS = ['click', 'type', 'scroll', 'wait', 'goback', 'answer;']
+    ALL_ACTIONS = ['click', 'type', 'scroll', 'wait', 'answer;']
     REQUIRES_ELEMENT = ['click', 'type']
     MAX_RETRIES = 3  # Maximum number of retries allowed
     bbox_descriptions = format_descriptions_default(coordinates)

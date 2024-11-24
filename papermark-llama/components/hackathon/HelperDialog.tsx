@@ -194,9 +194,9 @@ export const HelperDialog = () => {
         <DialogTitle className="text-md flex items-center gap-2 p-4 font-medium">
           <img
             src="/clippy.webp"
-            className="h-12 w-12 rounded-full border-2 border-gray-600 bg-gray-500"
+            className="h-12 w-12 rounded-full border-2 border-gray-300 bg-blue-200"
           />
-          Welcome to the AI tour guide
+          Welcome to the Clippy LLama
         </DialogTitle>
         <CommandInput
           placeholder="Ask me anything"

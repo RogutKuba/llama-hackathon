@@ -300,12 +300,6 @@ export const SidebarComponent = ({ className }: { className?: string }) => {
           </section>
         </ScrollArea>
 
-        <div className="flex justify-center">
-          <button className="w-full p-4" onClick={() => annotatePage()}>
-            Mark Page
-          </button>
-        </div>
-
         <div className="mb-4">
           {/*
            * if user is free and showProBanner is true show pro banner
