@@ -1,13 +1,12 @@
 from model.agent import open_browser, format_descriptions_default
 from model.annotate_page import mark_page_default
-from search.constants import PREAMBLE
-from openai import OpenAI
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 from dotenv import load_dotenv
 import base64
+from search.groq import prompt_llm
 
 load_dotenv()
 
@@ -18,7 +17,6 @@ You have performed the following actions so far:
 {trajectory}
 """.strip()
 
-client = OpenAI()
 
 
 def parse(response: str) -> dict:
@@ -40,29 +38,6 @@ def parse(response: str) -> dict:
         ]
     return {"action": action, "args": action_input}
 
-
-def prompt_llm(prompt, base64_image):
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            { 'role': "system", 'content': PREAMBLE},
-            {
-            "role": "user",
-            "content": [
-                {"type": "text", "text": prompt},
-                {
-                "type": "image_url",
-                "image_url": {
-                    "url": f"{base64_image}",
-                },
-                },
-            ],
-            }
-        ],
-        max_tokens=300,
-    )
-    print(response.choices[0])
-    return response.choices[0].message.content
 
 
 
@@ -153,22 +128,11 @@ class SearchRequest(BaseModel):
     screenshot: str
     trajectory: list
 
-    #   screenshot: string;
-#   coordinates: {
-#     x: number;
-#     y: number;
-#     type: string;
-#     text: string;
-#     ariaLabel: string;
-#   }[];
-
 # API endpoint
 @app.post("/search")
 async def search_endpoint(request: SearchRequest):
     result = await search_action(request.user_prompt, request.coordinates, request.screenshot, request.trajectory)
     return {"status": "success", "result": result}
-
-
 
 
 
