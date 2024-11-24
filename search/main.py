@@ -104,3 +104,4 @@ async def search_endpoint(request: SearchRequest):
 
 if __name__ == "__main__":
     uvicorn.run(app)
+    # python -m search.main
