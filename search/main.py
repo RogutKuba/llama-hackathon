@@ -81,11 +81,26 @@ async def search_action(url, user_prompt):
     response = prompt_llm(model_prompt, annotated_page['img'])
     print(response)
     parsed_response = parse(response)
-    action = parsed_response['action']
-    print(parsed_response)
-    chosen_element = state['bboxes'][int(parsed_response['args'][0])]
-    print(action, chosen_element)
-    return action, chosen_element
+    action, args = parsed_response['action'], parsed_response['args']
+
+    print(action, args)  # 'action' and 'args'
+    chosen_element = state['bboxes'][int(args[0])]
+    print(chosen_element)
+    result = {
+        'action': action,
+        'args': args,
+        **chosen_element
+    }
+#     """
+#     - Click [Numerical_Label] 
+# - Type [Numerical_Label]; [Content] 
+# - Scroll [Numerical_Label or WINDOW]; [up or down] 
+# - Wait 
+# - GoBack
+# - Google
+# - ANSWER; [content]
+#     """
+    return result
 
 # FastAPI application setup
 app = FastAPI()
