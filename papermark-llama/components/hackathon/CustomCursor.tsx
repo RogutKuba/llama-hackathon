@@ -1,0 +1,84 @@
+import { useEffect, useRef } from "react";
+
+import { ActionResponse, performActionInDom } from "./action.query";
+
+interface CursorProps {
+  start: { x: number; y: number };
+  end: { x: number; y: number };
+  duration: number; // in milliseconds
+  actionCallbackData: ActionResponse;
+  clearCursorParamsCallback: () => void;
+  nextActionCallback: () => void;
+}
+
+export const CustomCursor = ({
+  start,
+  end,
+  duration,
+  actionCallbackData,
+  clearCursorParamsCallback,
+  nextActionCallback,
+}: CursorProps) => {
+  const cursorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const cursor = cursorRef.current;
+
+    if (cursor) {
+      // Set initial position
+      cursor.style.left = `0px`;
+      cursor.style.top = `-25px`;
+
+      // Animate to the end position
+      const animation = cursor.animate(
+        [
+          { transform: `translate(${start.x}px, ${start.y}px)` },
+          { transform: `translate(${end.x}px, ${end.y}px)` },
+        ],
+        {
+          duration: duration,
+          fill: "forwards",
+          easing: "ease-in-out",
+        },
+      );
+
+      // when animation is done, perform the action
+      animation.onfinish = () => {
+        performActionInDom(actionCallbackData);
+
+        setTimeout(() => {
+          clearCursorParamsCallback();
+
+          // wait 5 seconds and perform the next action
+          setTimeout(() => {
+            nextActionCallback();
+          }, 2000);
+        }, 500);
+      };
+
+      return () => animation.cancel();
+    }
+  }, [start, end, duration]);
+
+  return (
+    <div ref={cursorRef} className="fixed h-4 w-4" style={{ zIndex: 100 }}>
+      <div className="w-fit whitespace-nowrap rounded-full border border-gray-500 bg-green-300 px-2 py-1 text-xs">
+        AI Tour Guide
+      </div>
+
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="36"
+        height="48"
+        viewBox="0 0 24 24"
+      >
+        <path
+          fill="#FFF"
+          stroke="#000"
+          stroke-width="1"
+          d="M5.5 3.21V20.8c0 .45.54.67.85.35l4.86-4.86a.5.5 0 0 1 .35-.15h6.87a.5.5 0 0 0 .35-.85L6.35 2.85a.5.5 0 0 0-.85.35Z"
+        ></path>
+      </svg>
+    </div>
+  );
+};
