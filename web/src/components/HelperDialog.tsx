@@ -8,16 +8,19 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { DialogTitle } from '@radix-ui/react-dialog';
-import { getAction } from '@/query/action.query';
+import { ActionResponse, getAction } from '@/query/action.query';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { takeWindowScreenshot } from '@/lib/screenshot';
 import { annotatePage, unannotatePage } from '@/lib/markPage';
+import { CustomCursor } from '@/app/browser-actions/CustomCursor';
 
 type CursorParams = {
   start: { x: number; y: number };
   end: { x: number; y: number };
   duration: number;
+  actionCallbackData: ActionResponse;
+  clearCursorParamsCallback: () => void;
 };
 
 type HelperDialogProps = {
@@ -79,7 +82,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
       screenshot: params.screenshot,
     });
 
-    await getAction({
+    const actionResponse = await getAction({
       user_prompt: params.prompt,
       // url: window.location.href,
       screenshot: params.screenshot,
@@ -87,6 +90,16 @@ export const HelperDialog = (props: HelperDialogProps) => {
     });
 
     setLoading(false);
+
+    setCursorParams({
+      start: { x: 100, y: 100 },
+      end: { x: actionResponse.result.x, y: actionResponse.result.y },
+      duration: 1000,
+      actionCallbackData: actionResponse,
+      clearCursorParamsCallback: () => setCursorParams(null),
+    });
+
+    return actionResponse;
   };
 
   const handleOpenChange = async (open: boolean) => {
@@ -109,7 +122,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
 
       unannotatePage(labels);
 
-      await getFirstAction({
+      const actionData = await getFirstAction({
         screenshot: img,
         prompt,
         coordinates,
@@ -124,6 +137,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
   return (
     <>
       {/* {loading && <div className='fixed inset-0 bg-black/20 z-50' />} */}
+      {cursorParams && <CustomCursor {...cursorParams} />}
       <CommandDialog open={open} onOpenChange={handleOpenChange}>
         <DialogTitle className='p-4 text-md font-medium flex items-center gap-2'>
           <img
