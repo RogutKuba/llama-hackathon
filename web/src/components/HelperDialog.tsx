@@ -55,7 +55,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
   }, []);
 
   const onSubmit = async () => {
-    handleOpenChange(false);
+    handleOpenChange(false, true);
   };
 
   const getFirstAction = async (params: {
@@ -101,7 +101,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
     return actionResponse;
   };
 
-  const handleOpenChange = async (open: boolean) => {
+  const handleOpenChange = async (open: boolean, wasSubmitted?: boolean) => {
     console.log('handleOpenChange', open);
     // if opening, take screenshot first
     if (open) {
@@ -111,16 +111,18 @@ export const HelperDialog = (props: HelperDialogProps) => {
       setOpen(open);
 
       // await 200ms
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      if (wasSubmitted) {
+        await new Promise((resolve) => setTimeout(resolve, 200));
 
-      // annotate the page
-      const { screenshot, coordinates } = await annotateAndTakeScreenshot();
+        // annotate the page
+        const { screenshot, coordinates } = await annotateAndTakeScreenshot();
 
-      await getFirstAction({
-        screenshot,
-        prompt,
-        coordinates,
-      });
+        await getFirstAction({
+          screenshot,
+          prompt,
+          coordinates,
+        });
+      }
     }
   };
 
