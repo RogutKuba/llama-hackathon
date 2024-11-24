@@ -69,7 +69,7 @@ export const crawlerRouter = new OpenAPIHono<AppContext>()
     const crawl = await firecrawlCrawl({
       url,
       apiKey: ctx.env.FIRECRAWL_API_KEY,
-      limit: 50,
+      limit: 2,
       webhook: `${ctx.env.FIRECRAWL_WEBHOOK_URL}/${siteId}`,
     });
 
@@ -125,19 +125,16 @@ const handlePageEvent = async (params: {
 }) => {
   const { ctx, siteId, event } = params;
   const db = getDbConnection(ctx);
-  console.log('webhook event is ', event);
 
   if (event.type !== 'crawl.page') {
     return;
   }
 
-  console.log('event data is ', event.data);
-
   const markdown = event.data?.[0]?.markdown;
   const sourceId = event.data?.[0]?.metadata.sourceURL ?? event.id;
 
-  console.log('markdown is ', markdown);
-  console.log('sourceId is ', sourceId);
+  // console.log('markdown is ', markdown);
+  // console.log('sourceId is ', sourceId);
 
   if (!markdown) {
     return;

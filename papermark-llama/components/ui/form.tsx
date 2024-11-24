@@ -61,7 +61,7 @@ export function Form({
               required
               // disabled={disabledTooltip ? true : false}
               onChange={(e) => {
-                console.log("received change event");
+                console.log("received change event in input");
                 setValue(e.target.value);
               }}
               className={cn(
