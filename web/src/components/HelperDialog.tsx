@@ -32,7 +32,6 @@ export const HelperDialog = (props: HelperDialogProps) => {
   const { setSentData } = props;
 
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState('');
 
   const [cursorParams, setCursorParams] = useState<CursorParams | null>(null);
@@ -50,8 +49,6 @@ export const HelperDialog = (props: HelperDialogProps) => {
   }, []);
 
   const onSubmit = async () => {
-    setLoading(true);
-    console.log('onSubmit');
     handleOpenChange(false);
   };
 
@@ -67,12 +64,10 @@ export const HelperDialog = (props: HelperDialogProps) => {
     }[];
   }) => {
     console.log('getFirstAction');
-    setLoading(true);
 
     console.log('prompt', params.prompt);
     console.log('screenshot', params.screenshot);
     if (!params.prompt || !params.screenshot) {
-      setLoading(false);
       return;
     }
 
@@ -90,7 +85,9 @@ export const HelperDialog = (props: HelperDialogProps) => {
       coordinates: params.coordinates,
     });
 
-    setLoading(false);
+    if (!actionResponse) {
+      return;
+    }
 
     setCursorParams({
       start: { x: 100, y: 100 },
@@ -98,7 +95,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
       duration: 1000,
       actionCallbackData: actionResponse,
       clearCursorParamsCallback: () => setCursorParams(null),
-      nextActionCallback: () => {},
+      nextActionCallback: () => takeNextAction(),
     });
 
     return actionResponse;
@@ -117,23 +114,46 @@ export const HelperDialog = (props: HelperDialogProps) => {
       await new Promise((resolve) => setTimeout(resolve, 200));
 
       // annotate the page
-      const { labels, coordinates } = annotatePage();
-
-      console.log('taking screenshot');
-      const img = await takeWindowScreenshot();
-
-      unannotatePage(labels);
+      const { screenshot, coordinates } = await annotateAndTakeScreenshot();
 
       await getFirstAction({
-        screenshot: img,
+        screenshot,
         prompt,
         coordinates,
       });
     }
   };
 
-  const loopActions = async () => {
-    console.log('loopActions');
+  const takeNextAction = async () => {
+    console.log('takingNextAction');
+    const { screenshot, coordinates } = await annotateAndTakeScreenshot();
+
+    const actionResponse = await getAction({
+      user_prompt: prompt,
+      screenshot,
+      coordinates,
+    });
+
+    if (!actionResponse) {
+      console.log('DONE THE LOOP');
+      return;
+    }
+
+    setCursorParams({
+      start: { x: 100, y: 100 },
+      end: { x: actionResponse.result.x, y: actionResponse.result.y },
+      duration: 1000,
+      actionCallbackData: actionResponse,
+      clearCursorParamsCallback: () => setCursorParams(null),
+      nextActionCallback: () => takeNextAction(),
+    });
+  };
+
+  const annotateAndTakeScreenshot = async () => {
+    const { labels, coordinates } = annotatePage();
+    const img = await takeWindowScreenshot();
+    unannotatePage(labels);
+    return { screenshot: img, coordinates };
   };
 
   return (
