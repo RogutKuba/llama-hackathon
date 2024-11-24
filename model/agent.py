@@ -25,6 +25,19 @@ def format_descriptions(state):
     bbox_descriptions = "\nValid Bounding Boxes:\n" + "\n".join(labels)
     return {**state, "bbox_descriptions": bbox_descriptions}
 
+
+def format_descriptions_default(bboxes):
+    labels = []
+    for i, bbox in enumerate(bboxes):
+        text = bbox.get("ariaLabel") or ""
+        if not text.strip():
+            text = bbox["text"]
+        el_type = bbox.get("type")
+        labels.append(f'{i} (<{el_type}/>): "{text}"')
+    bbox_descriptions = "\nValid Bounding Boxes:\n" + "\n".join(labels)
+    return bbox_descriptions
+
+
 def parse(text: str) -> dict:
     action_prefix = "Action: "
     if not text.strip().split("\n")[-1].startswith(action_prefix):
