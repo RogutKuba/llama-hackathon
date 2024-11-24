@@ -65,8 +65,9 @@ def prompt_llm(prompt, base64_image):
 
 
 async def search_action(user_prompt: str, coordinates: list[dict], screenshot: str):
-    ALL_ACTIONS = ['click', 'type', 'scroll', 'wait', 'goback', 'google', 'answer']
-    MAX_RETRIES = 10  # Maximum number of retries allowed
+    ALL_ACTIONS = ['click', 'type', 'scroll', 'wait', 'goback', 'answer']
+    REQUIRES_ELEMENT = ['click', 'type']
+    MAX_RETRIES = 3  # Maximum number of retries allowed
     bbox_descriptions = format_descriptions_default(coordinates)
     
     model_prompt = PROMPT_TEMPLATE.format(
@@ -82,11 +83,14 @@ async def search_action(user_prompt: str, coordinates: list[dict], screenshot: s
             action, args = parsed_response['action'], parsed_response['args']
             print(f'Action: {action}\nArgs: {args}')
             
-            chosen_element = coordinates[int(args[0])]
-            print(f'Chosen Element: {chosen_element}')
-            
-            # if attempt < 4:
-            #     action = 'test'
+            if action.lower() in REQUIRES_ELEMENT:
+                if not args:
+                    raise ValueError(f'Action {action} requires an element in args')
+                chosen_element = coordinates[int(args[0])]
+                print(f'Chosen Element: {chosen_element}')
+            else:
+                chosen_element = {}
+
             # Validate the action
             if action.lower() not in ALL_ACTIONS:
                 raise ValueError(f'Invalid action: {action}')
@@ -108,13 +112,14 @@ async def search_action(user_prompt: str, coordinates: list[dict], screenshot: s
                     'error': 'Unable to process action',
                     'details': str(e)
                 }
+            
+# REQUIRES_ELEMENT = ['click', 'type']
 #     """
 #     - Click [Numerical_Label] 
 # - Type [Numerical_Label]; [Content] 
 # - Scroll [Numerical_Label or WINDOW]; [up or down] 
 # - Wait 
 # - GoBack
-# - Google
 # - ANSWER; [content]
 #     """
     # close the page:
