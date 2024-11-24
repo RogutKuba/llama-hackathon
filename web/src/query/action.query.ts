@@ -14,6 +14,13 @@ export const getAction = async (params: {
   user_prompt: string;
   // url: string;
   screenshot: string;
+  coordinates: {
+    x: number;
+    y: number;
+    type: string;
+    text: string;
+    ariaLabel: string;
+  }[];
 }) => {
   const response = await fetch('http://localhost:8000/search', {
     method: 'POST',

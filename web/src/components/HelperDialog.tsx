@@ -54,6 +54,13 @@ export const HelperDialog = (props: HelperDialogProps) => {
   const getFirstAction = async (params: {
     screenshot: string;
     prompt: string;
+    coordinates: {
+      x: number;
+      y: number;
+      type: string;
+      text: string;
+      ariaLabel: string;
+    }[];
   }) => {
     console.log('getFirstAction');
     setLoading(true);
@@ -76,6 +83,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
       user_prompt: params.prompt,
       // url: window.location.href,
       screenshot: params.screenshot,
+      coordinates: params.coordinates,
     });
 
     setLoading(false);
@@ -94,7 +102,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
       await new Promise((resolve) => setTimeout(resolve, 200));
 
       // annotate the page
-      const { labels } = annotatePage();
+      const { labels, coordinates } = annotatePage();
 
       console.log('taking screenshot');
       const img = await takeWindowScreenshot();
@@ -104,6 +112,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
       await getFirstAction({
         screenshot: img,
         prompt,
+        coordinates,
       });
     }
   };
