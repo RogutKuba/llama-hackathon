@@ -14,13 +14,12 @@ const customCSS = `
 }
 `;
 
-const styleTag = document.createElement('style');
-styleTag.textContent = customCSS;
-document.head.append(styleTag);
-
-let labels: any[] = [];
-
 function unmarkPage() {
+  const styleTag = document.createElement('style');
+  styleTag.textContent = customCSS;
+  document.head.append(styleTag);
+
+  let labels: any[] = [];
   // Unmark page logic
   for (const label of labels) {
     document.body.removeChild(label);
@@ -35,6 +34,12 @@ function markPage(): {
   text: string;
   ariaLabel: string;
 }[] {
+  const styleTag = document.createElement('style');
+  styleTag.textContent = customCSS;
+  document.head.append(styleTag);
+
+  let labels: any[] = [];
+
   unmarkPage();
 
   const bodyRect: DOMRect = document.body.getBoundingClientRect();

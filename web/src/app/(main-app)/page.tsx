@@ -1,66 +1,70 @@
 'use client';
 
 import { AppContainer } from '@/components/AppContainer';
-import { CreateSiteForm } from '@/components/CreateSiteForm';
 import { HelperDialog } from '@/components/HelperDialog';
-import { CustomCursor } from '../browser-actions/CustomCursor';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { getAction } from '@/query/action.query';
 import { annotatePage } from '@/lib/markPage';
+import { useMemo } from 'react';
 
 export default function Home() {
-  const [cursorParams, setCursorParams] = useState<{
-    start: { x: number; y: number };
-    end: { x: number; y: number };
-    duration: number;
-  } | null>(null);
-
-  const handleButtonClick = () => {
-    if (cursorParams) {
-      setCursorParams(null);
-    } else {
-      setCursorParams({
-        start: { x: 100, y: 100 },
-        end: { x: 500, y: 500 },
-        duration: 5000,
-      });
-    }
-  };
-
-  const handleGetAction = async () => {
-    const action = await getAction({
-      user_prompt: 'Click start mouse button',
-      url: 'http://localhost:3000',
-    });
-
-    // setCursorParams({
-    //   start: { x: 100, y: 100 },
-    //   end: { x: action.x, y: action.y },
-    //   duration: 5000,
-    // });
-  };
-
   const handleMarkPage = () => {
     annotatePage();
   };
+
+  const randomWords = [
+    'apple',
+    'banana',
+    'cherry',
+    'dog',
+    'elephant',
+    'giraffe',
+    'horse',
+    'iguana',
+    'jaguar',
+    'kangaroo',
+    'leopard',
+  ];
+
+  const prefixes = useMemo(() => {
+    return new Array(100).fill(0).map((_, i) => {
+      const full = crypto.randomUUID();
+      const prefix = full.split('-')[0];
+      const word = randomWords[i % randomWords.length];
+
+      return {
+        prefix,
+        word,
+      };
+    });
+  }, []);
+
+  const [selectedPrefix, setSelectedPrefix] = useState<string>('init');
 
   return (
     <AppContainer className=''>
       <HelperDialog />
 
-      {cursorParams ? <CustomCursor {...cursorParams} /> : null}
-
       <h1>Welcome to Firecrawl</h1>
 
       <div className='flex gap-4'>
-        <Button onClick={handleButtonClick}>
-          {cursorParams ? 'Stop mouse' : 'Start mouse'}
-        </Button>
-
-        <Button onClick={handleGetAction}>Get Action</Button>
+        <Button>Nothing button</Button>
 
         <Button onClick={handleMarkPage}>Mark Page</Button>
+      </div>
+
+      <div className='flex flex-wrap gap-4 mt-4'>
+        {prefixes.map(({ prefix, word }, index) => (
+          <div key={prefix} className='p-4 border border-gray-300 rounded-md'>
+            <h2>
+              {selectedPrefix} --- {word}
+            </h2>
+
+            <Button onClick={() => setSelectedPrefix(prefix)}>
+              Button {index}
+            </Button>
+          </div>
+        ))}
       </div>
     </AppContainer>
   );
