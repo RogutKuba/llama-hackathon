@@ -1,13 +1,13 @@
 from model.agent import open_browser, format_descriptions_default
 from model.annotate_page import mark_page_default
+from search.constants import PREAMBLE
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 from dotenv import load_dotenv
 import base64
-from search.groq import prompt_llm
-
+from groq import Groq
 load_dotenv()
 
 PROMPT_TEMPLATE = """
@@ -17,6 +17,7 @@ You have performed the following actions so far:
 {trajectory}
 """.strip()
 
+client = Groq()
 
 
 def parse(response: str) -> dict:
@@ -39,10 +40,31 @@ def parse(response: str) -> dict:
     return {"action": action, "args": action_input}
 
 
+def prompt_llm(prompt, base64_image):
+    response = client.chat.completions.create(
+        model="llama-3.2-90b-vision-preview",
+        messages=[
+            {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": PREAMBLE + prompt},
+                {
+                "type": "image_url",
+                "image_url": {
+                    "url": f"{base64_image}",
+                },
+                },
+            ],
+            }
+        ],
+        max_tokens=300,
+    )
+    return response.choices[0].message.content
+
 
 
 async def search_action(user_prompt: str, coordinates: list[dict], screenshot: str, trajectory: list):
-    ALL_ACTIONS = ['click', 'type', 'scroll', 'wait', 'answer;']
+    ALL_ACTIONS = ['click', 'type', 'scroll', 'wait', 'goback', 'answer;']
     REQUIRES_ELEMENT = ['click', 'type']
     MAX_RETRIES = 3  # Maximum number of retries allowed
     bbox_descriptions = format_descriptions_default(coordinates)
