@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { annotatePage } from '@/lib/markPage';
 import { useMemo } from 'react';
+import { takeWindowScreenshot } from '@/lib/screenshot';
 
 export default function Home() {
   const handleMarkPage = () => {
@@ -41,6 +42,13 @@ export default function Home() {
 
   const [selectedPrefix, setSelectedPrefix] = useState<string>('init');
 
+  const [img, setImg] = useState<string | null>(null);
+
+  const handleTakeScreenshot = async () => {
+    const img = await takeWindowScreenshot();
+    setImg(img);
+  };
+
   return (
     <AppContainer className=''>
       <HelperDialog />
@@ -51,8 +59,11 @@ export default function Home() {
         <Button>Nothing button</Button>
 
         <Button onClick={handleMarkPage}>Mark Page</Button>
+
+        <Button onClick={handleTakeScreenshot}>Take Screenshot</Button>
       </div>
 
+      {img && <img src={img} alt='screenshot' />}
       <div className='flex flex-wrap gap-4 mt-4'>
         {prefixes.map(({ prefix, word }, index) => (
           <div key={prefix} className='p-4 border border-gray-300 rounded-md'>

@@ -11,6 +11,7 @@ import { DialogTitle } from '@radix-ui/react-dialog';
 import { getAction } from '@/query/action.query';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import { takeWindowScreenshot } from '@/lib/screenshot';
 
 type CursorParams = {
   start: { x: number; y: number };
@@ -22,6 +23,10 @@ export const HelperDialog = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState('');
+
+  const [submittedPrompt, setSubmittedPrompt] = useState<string | null>(null);
+
+  const [screenshot, setScreenshot] = useState<string | null>(null);
 
   const [cursorParams, setCursorParams] = useState<CursorParams | null>(null);
 
@@ -42,23 +47,56 @@ export const HelperDialog = () => {
     setLoading(true);
     console.log(data);
 
+    // await getAction({
+    //   user_prompt: data,
+    //   url: window.location.href,
+    //   screenshot,
+    // });
+
+    setSubmittedPrompt(data);
+    setPrompt('');
+  };
+
+  const submitAction = async () => {
+    setLoading(true);
+
+    if (!submittedPrompt || !screenshot) {
+      setLoading(false);
+      return;
+    }
+
     await getAction({
-      user_prompt: data,
+      user_prompt: submittedPrompt,
       url: window.location.href,
+      screenshot,
     });
 
-    // setCursorParams({
-    //   start: { x: 100, y: 100 },
-    //   end: { x: action.x, y: action.y },
-    //   duration: 5000,
-    // });
     setLoading(false);
+  };
+
+  const handleOpenChange = async (open: boolean) => {
+    console.log('handleOpenChange', open);
+    // if opening, take screenshot first
+    if (open) {
+      console.log('clearing screenshot');
+      setScreenshot(null);
+      setOpen(open);
+    } else {
+      setOpen(open);
+
+      // await 100ms
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      console.log('taking screenshot');
+      const img = await takeWindowScreenshot();
+      setScreenshot(img);
+    }
   };
 
   return (
     <>
       {loading && <div className='fixed inset-0 bg-black/50 z-50' />}
-      <CommandDialog open={open} onOpenChange={setOpen}>
+      <CommandDialog open={open} onOpenChange={handleOpenChange}>
         <DialogTitle className='p-4 text-md font-medium flex items-center gap-2'>
           <img
             src='/clippy.webp'
@@ -76,6 +114,8 @@ export const HelperDialog = () => {
           }}
         />
         <CommandList />
+
+        {screenshot && <img src={screenshot} alt='screenshot' />}
       </CommandDialog>
     </>
   );
