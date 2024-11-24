@@ -35,15 +35,12 @@ export const CustomCursor = ({ start, end, duration }: CursorProps) => {
   }, [start, end, duration]);
 
   return (
-    <div className='h-20 w-20'>
-      <h2>awdwad</h2>
-      <div ref={cursorRef} className='absolute z-1000 w-4 h-4'>
-        <div className='w-fit text-xs bg-green-300 border border-gray-500 rounded-full px-2 py-1 whitespace-nowrap'>
-          AI Tour Guide
-        </div>
-
-        <img src='/cursor-icon.svg' />
+    <div ref={cursorRef} className='absolute z-1000 w-4 h-4'>
+      <div className='w-fit text-xs bg-green-300 border border-gray-500 rounded-full px-2 py-1 whitespace-nowrap'>
+        AI Tour Guide
       </div>
+
+      <img src='/cursor-icon.svg' />
     </div>
   );
 };

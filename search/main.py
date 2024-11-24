@@ -3,6 +3,7 @@ from model.annotate_page import mark_page_default
 from search.constants import PREAMBLE
 from openai import OpenAI
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 from dotenv import load_dotenv
@@ -104,6 +105,13 @@ async def search_action(url, user_prompt):
 
 # FastAPI application setup
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Request model for API input
 class SearchRequest(BaseModel):
