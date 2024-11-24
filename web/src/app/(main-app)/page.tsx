@@ -49,11 +49,25 @@ export default function Home() {
     setImg(img);
   };
 
+  const [sentData, setSentData] = useState<{
+    prompt: string;
+    screenshot: string;
+  } | null>(null);
+
   return (
     <AppContainer className=''>
-      <HelperDialog />
+      <HelperDialog setSentData={setSentData} />
 
       <h1>Welcome to Firecrawl</h1>
+
+      {sentData && (
+        <div>
+          <h2>Sent Data</h2>
+          <p>{sentData.prompt}</p>
+
+          <img src={sentData.screenshot} alt='screenshot' />
+        </div>
+      )}
 
       <div className='flex gap-4'>
         <Button>Nothing button</Button>

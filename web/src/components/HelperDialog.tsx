@@ -19,14 +19,16 @@ type CursorParams = {
   duration: number;
 };
 
-export const HelperDialog = () => {
+type HelperDialogProps = {
+  setSentData: (params: { prompt: string; screenshot: string }) => void;
+};
+
+export const HelperDialog = (props: HelperDialogProps) => {
+  const { setSentData } = props;
+
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState('');
-
-  const [submittedPrompt, setSubmittedPrompt] = useState<string | null>(null);
-
-  const [screenshot, setScreenshot] = useState<string | null>(null);
 
   const [cursorParams, setCursorParams] = useState<CursorParams | null>(null);
 
@@ -42,33 +44,37 @@ export const HelperDialog = () => {
     return () => document.removeEventListener('keydown', down);
   }, []);
 
-  const onSubmit = async (data: string) => {
-    setOpen(false);
+  const onSubmit = async () => {
     setLoading(true);
-    console.log(data);
-
-    // await getAction({
-    //   user_prompt: data,
-    //   url: window.location.href,
-    //   screenshot,
-    // });
-
-    setSubmittedPrompt(data);
-    setPrompt('');
+    console.log('onSubmit');
+    handleOpenChange(false);
   };
 
-  const submitAction = async () => {
+  const getFirstAction = async (params: {
+    screenshot: string;
+    prompt: string;
+  }) => {
+    console.log('getFirstAction');
     setLoading(true);
 
-    if (!submittedPrompt || !screenshot) {
+    console.log('prompt', params.prompt);
+    console.log('screenshot', params.screenshot);
+    if (!params.prompt || !params.screenshot) {
       setLoading(false);
       return;
     }
 
+    console.log('getting first action');
+
+    setSentData({
+      prompt: params.prompt,
+      screenshot: params.screenshot,
+    });
+
     await getAction({
-      user_prompt: submittedPrompt,
-      url: window.location.href,
-      screenshot,
+      user_prompt: params.prompt,
+      // url: window.location.href,
+      screenshot: params.screenshot,
     });
 
     setLoading(false);
@@ -79,23 +85,26 @@ export const HelperDialog = () => {
     // if opening, take screenshot first
     if (open) {
       console.log('clearing screenshot');
-      setScreenshot(null);
       setOpen(open);
     } else {
       setOpen(open);
 
-      // await 100ms
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // await 200ms
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
       console.log('taking screenshot');
       const img = await takeWindowScreenshot();
-      setScreenshot(img);
+
+      await getFirstAction({
+        screenshot: img,
+        prompt,
+      });
     }
   };
 
   return (
     <>
-      {loading && <div className='fixed inset-0 bg-black/50 z-50' />}
+      {/* {loading && <div className='fixed inset-0 bg-black/20 z-50' />} */}
       <CommandDialog open={open} onOpenChange={handleOpenChange}>
         <DialogTitle className='p-4 text-md font-medium flex items-center gap-2'>
           <img
@@ -109,13 +118,11 @@ export const HelperDialog = () => {
           onValueChange={(value: string) => setPrompt(value)}
           onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
             if (e.key === 'Enter') {
-              onSubmit(prompt);
+              onSubmit();
             }
           }}
         />
         <CommandList />
-
-        {screenshot && <img src={screenshot} alt='screenshot' />}
       </CommandDialog>
     </>
   );

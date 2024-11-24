@@ -12,7 +12,7 @@ type ActionResponse = {
 
 export const getAction = async (params: {
   user_prompt: string;
-  url: string;
+  // url: string;
   screenshot: string;
 }) => {
   const response = await fetch('http://localhost:8000/search', {
