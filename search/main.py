@@ -40,7 +40,7 @@ def parse(response: str) -> dict:
 
 def prompt_llm(prompt, base64_image):
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-4o",
         messages=[
             { 'role': "system", 'content': PREAMBLE},
             {
@@ -69,6 +69,8 @@ async def search_action(url, user_prompt):
     {'action': 'Click', 'args': ['11']}
     """
     page = await open_browser(url)
+    # TODO: get total pixel of the page:
+
     print("PAGE OPENED")
     annotated_page = await mark_page_default(page)
     state = format_descriptions(annotated_page)
@@ -100,7 +102,11 @@ async def search_action(url, user_prompt):
 # - Google
 # - ANSWER; [content]
 #     """
+    # close the page:
+    # await page.context.close()
     return result
+
+
 
 # FastAPI application setup
 app = FastAPI()
