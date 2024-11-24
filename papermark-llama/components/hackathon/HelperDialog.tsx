@@ -196,7 +196,7 @@ export const HelperDialog = () => {
             src="/clippy.webp"
             className="h-12 w-12 rounded-full border-2 border-gray-300 bg-blue-200"
           />
-          Welcome to the Clippy LLama
+          Welcome to the Clippy-Llama assistant
         </DialogTitle>
         <CommandInput
           placeholder="Ask me anything"
