@@ -1,7 +1,6 @@
 from langchain import hub
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-from langchain_openai import ChatOpenAI
 from IPython import display
 from playwright.async_api import async_playwright
 import asyncio
