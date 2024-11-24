@@ -14,6 +14,7 @@ import { useEffect } from 'react';
 import { takeWindowScreenshot } from '@/lib/screenshot';
 import { annotatePage, unannotatePage } from '@/lib/markPage';
 import { CustomCursor } from '@/app/browser-actions/CustomCursor';
+import { useTrajectory } from '@/lib/traj';
 
 type CursorParams = {
   start: { x: number; y: number };
@@ -33,6 +34,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
 
   const [open, setOpen] = useState(false);
   const [prompt, setPrompt] = useState('');
+  const { clearTrajectory } = useTrajectory();
 
   const [cursorParams, setCursorParams] = useState<CursorParams | null>(null);
 
@@ -63,6 +65,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
       ariaLabel: string;
     }[];
   }) => {
+    clearTrajectory();
     console.log('getFirstAction');
 
     console.log('prompt', params.prompt);
@@ -91,7 +94,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
 
     setCursorParams({
       start: { x: 100, y: 100 },
-      end: { x: actionResponse.result.x, y: actionResponse.result.y },
+      end: { x: actionResponse.result.x!, y: actionResponse.result.y! },
       duration: 1000,
       actionCallbackData: actionResponse,
       clearCursorParamsCallback: () => setCursorParams(null),
@@ -141,7 +144,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
 
     setCursorParams({
       start: { x: 100, y: 100 },
-      end: { x: actionResponse.result.x, y: actionResponse.result.y },
+      end: { x: actionResponse.result.x!, y: actionResponse.result.y! },
       duration: 1000,
       actionCallbackData: actionResponse,
       clearCursorParamsCallback: () => setCursorParams(null),

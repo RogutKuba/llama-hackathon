@@ -3,15 +3,17 @@ import {
   scrollAction,
   typeAction,
 } from '@/app/browser-actions/actions';
+import { useTrajectory } from '@/lib/traj';
 
 export type ActionResponse = {
   status: 'success' | 'error';
   result: {
     action: string;
-    x: number;
-    y: number;
-    ariaLabel: string;
     args: string[];
+    trajectory: string[];
+    x?: number;
+    y?: number;
+    ariaLabel?: string;
   };
 };
 
@@ -27,9 +29,17 @@ export const getAction = async (params: {
     ariaLabel: string;
   }[];
 }) => {
+  const { addTrajectory, getTrajectory } = useTrajectory();
+
+  const trajectory = getTrajectory();
+  console.log('trajectories', trajectory);
+
   const response = await fetch('http://localhost:8000/search', {
     method: 'POST',
-    body: JSON.stringify(params),
+    body: JSON.stringify({
+      ...params,
+      trajectory,
+    }),
     headers: {
       'Content-Type': 'application/json',
     },
@@ -46,6 +56,8 @@ export const getAction = async (params: {
   }
 
   console.log('actionResponse', actionResponse);
+
+  addTrajectory(actionResponse.result.trajectory);
   // if action is close, return null
   if (actionResponse.result.action.toLowerCase().includes('answer')) {
     return null;
@@ -63,6 +75,12 @@ export const getAction = async (params: {
   // } as ActionResponse;
   console.log('actionResponse', actionResponse);
 
+  // if action response is scroll, force x and y to be 0
+  if (actionResponse.result.action.toLowerCase().includes('scroll')) {
+    actionResponse.result.x = 0;
+    actionResponse.result.y = 0;
+  }
+
   return actionResponse;
 };
 
@@ -73,6 +91,10 @@ export const performActionInDom = async (actionResponse: ActionResponse) => {
 
   switch (action.toLowerCase()) {
     case 'click':
+      if (!x || !y) {
+        throw new Error('No x or y provided for click action');
+      }
+
       clickAction({ x, y });
       break;
     case 'scroll':
@@ -86,7 +108,17 @@ export const performActionInDom = async (actionResponse: ActionResponse) => {
       });
       break;
     case 'type':
-      typeAction({ text: args[1], x, y });
+      const textToType = args[1];
+
+      if (!textToType) {
+        throw new Error('No text to type provided for type action');
+      }
+
+      if (!x || !y) {
+        throw new Error('No x or y provided for type action');
+      }
+
+      typeAction({ text: textToType, x, y });
       break;
     default:
       throw new Error(`Unknown action: ${actionResponse}`);

@@ -71,6 +71,8 @@ async def search_action(user_prompt: str, coordinates: list[dict], screenshot: s
     REQUIRES_ELEMENT = ['click', 'type']
     MAX_RETRIES = 3  # Maximum number of retries allowed
     bbox_descriptions = format_descriptions_default(coordinates)
+
+    print('trajectory', trajectory)
     
     trajectory_str = '\n'.join(trajectory)
     model_prompt = PROMPT_TEMPLATE.format(
@@ -149,7 +151,7 @@ class SearchRequest(BaseModel):
     user_prompt: str
     coordinates: list
     screenshot: str
-    trajectory: list = []
+    trajectory: list
 
     #   screenshot: string;
 #   coordinates: {
