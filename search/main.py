@@ -14,6 +14,8 @@ load_dotenv()
 PROMPT_TEMPLATE = """
 {user_input}
 {bbox_descriptions}
+You have performed the following actions so far:
+{trajectory}
 """.strip()
 
 client = OpenAI()
@@ -64,15 +66,17 @@ def prompt_llm(prompt, base64_image):
 
 
 
-async def search_action(user_prompt: str, coordinates: list[dict], screenshot: str):
+async def search_action(user_prompt: str, coordinates: list[dict], screenshot: str, trajectory: list):
     ALL_ACTIONS = ['click', 'type', 'scroll', 'wait', 'goback', 'answer;']
     REQUIRES_ELEMENT = ['click', 'type']
     MAX_RETRIES = 3  # Maximum number of retries allowed
     bbox_descriptions = format_descriptions_default(coordinates)
     
+    trajectory_str = '\n'.join(trajectory)
     model_prompt = PROMPT_TEMPLATE.format(
         user_input=user_prompt,
-        bbox_descriptions=bbox_descriptions
+        bbox_descriptions=bbox_descriptions,
+        trajectory=trajectory_str,
     )
     for attempt in range(MAX_RETRIES):
         try:
@@ -95,10 +99,12 @@ async def search_action(user_prompt: str, coordinates: list[dict], screenshot: s
             if action.lower() not in ALL_ACTIONS:
                 raise ValueError(f'Invalid action: {action}')
             
+            trajectory.append(response)
             # If all validations pass, return the result
             result = {
                 'action': action,
                 'args': args,
+                'trajectory': trajectory,
                 **chosen_element
             }
             return result
@@ -143,6 +149,7 @@ class SearchRequest(BaseModel):
     user_prompt: str
     coordinates: list
     screenshot: str
+    trajectory: list = []
 
     #   screenshot: string;
 #   coordinates: {
@@ -156,7 +163,7 @@ class SearchRequest(BaseModel):
 # API endpoint
 @app.post("/search")
 async def search_endpoint(request: SearchRequest):
-    result = await search_action(request.user_prompt, request.coordinates, request.screenshot)
+    result = await search_action(request.user_prompt, request.coordinates, request.screenshot, request.trajectory)
     return {"status": "success", "result": result}
 
 
