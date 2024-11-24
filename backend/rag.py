@@ -46,19 +46,18 @@ class RagPipeline:
         for element in documentation:
 
             # Chunking by characters
-            char_count = 0
             old_count = 0
             element_len = len(element['content'])
             over_limit = False
             for i in range(element_len):
-                char_count += 1
-                if over_limit and element['content'][char_count] == " ":
-                    docs.append(element['content'][old_count:char_count])
-                    old_count = char_count
+                if over_limit and element['content'][i] == " ":
+                    docs.append(element['content'][old_count:i])
+                    old_count = i
                     over_limit = False
-                if char_count % 500 == 0:
+                if i % 500 == 0:
                     over_limit = True
-            docs.append(element['content'][old_count:char_count])
+                i += 1
+            docs.append(element['content'][old_count:i])
 
             # -------
             # Chunking by Tokens
@@ -72,15 +71,15 @@ class RagPipeline:
 
             # breakpoint()
             
-            # char_count = 0
+            # i = 0
             # final_str = ""
             # for token_str in response['token_strings']:
             #     final_str += token_str
-            #     char_count += len(token_str)
-            #     if char_count > 500:
+            #     i += len(token_str)
+            #     if i > 500:
             #         docs.append(final_str)
             #         final_str = ""
-            #         char_count = 0
+            #         i = 0
             
             # if final_str:
             #     docs.append(final_str)
