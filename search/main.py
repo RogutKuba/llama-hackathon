@@ -5,7 +5,10 @@ from openai import OpenAI
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import uvicorn
+from dotenv import load_dotenv
 
+
+load_dotenv()
 
 PROMPT_TEMPLATE = """
 {user_input}
