@@ -21,6 +21,7 @@ type CursorParams = {
   duration: number;
   actionCallbackData: ActionResponse;
   clearCursorParamsCallback: () => void;
+  nextActionCallback: () => void;
 };
 
 type HelperDialogProps = {
@@ -97,6 +98,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
       duration: 1000,
       actionCallbackData: actionResponse,
       clearCursorParamsCallback: () => setCursorParams(null),
+      nextActionCallback: () => {},
     });
 
     return actionResponse;
@@ -122,7 +124,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
 
       unannotatePage(labels);
 
-      const actionData = await getFirstAction({
+      await getFirstAction({
         screenshot: img,
         prompt,
         coordinates,

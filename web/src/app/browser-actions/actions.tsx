@@ -17,6 +17,11 @@ export const typeAction = (params: { text: string; x: number; y: number }) => {
   // type the text in the x,y position
   const elemToType = document.elementFromPoint(params.x, params.y);
   if (elemToType instanceof HTMLElement) {
-    elemToType.textContent = params.text;
+    // check if the element is a text input
+    if (elemToType instanceof HTMLInputElement) {
+      elemToType.value = params.text;
+    } else {
+      elemToType.textContent = params.text;
+    }
   }
 };

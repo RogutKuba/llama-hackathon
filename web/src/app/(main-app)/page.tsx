@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { annotatePage } from '@/lib/markPage';
 import { useMemo } from 'react';
 import { takeWindowScreenshot } from '@/lib/screenshot';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 export default function Home() {
   const handleMarkPage = () => {
@@ -75,6 +77,11 @@ export default function Home() {
         <Button onClick={handleMarkPage}>Mark Page</Button>
 
         <Button onClick={handleTakeScreenshot}>Take Screenshot</Button>
+      </div>
+
+      <div>
+        <Label>Your Name</Label>
+        <Input />
       </div>
 
       <div className='flex flex-wrap gap-4 mt-4'>

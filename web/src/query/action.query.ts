@@ -1,4 +1,8 @@
-import { clickAction, scrollAction } from '@/app/browser-actions/actions';
+import {
+  clickAction,
+  scrollAction,
+  typeAction,
+} from '@/app/browser-actions/actions';
 
 export type ActionResponse = {
   status: 'success' | 'error';
@@ -23,34 +27,31 @@ export const getAction = async (params: {
     ariaLabel: string;
   }[];
 }) => {
-  // const response = await fetch('http://localhost:8000/search', {
-  //   method: 'POST',
-  //   body: JSON.stringify(params),
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  // });
-
-  // if (!response.ok) {
-  //   throw new Error('Failed to get action');
-  // }
-
-  // const actionResponse = (await response.json()) as ActionResponse;
-
-  const actionResponse = {
-    result: {
-      action: 'click',
-      x: 500,
-      y: 475,
-      ariaLabel: 'test',
-      args: ['test'],
+  const response = await fetch('http://localhost:8000/search', {
+    method: 'POST',
+    body: JSON.stringify(params),
+    headers: {
+      'Content-Type': 'application/json',
     },
-    status: 'success',
-  } as ActionResponse;
-  console.log('actionResponse', actionResponse);
+  });
 
-  // write in the dom a red box where the x and y coords are
-  const { action, x, y } = actionResponse.result;
+  if (!response.ok) {
+    throw new Error('Failed to get action');
+  }
+
+  const actionResponse = (await response.json()) as ActionResponse;
+
+  // const actionResponse = {
+  //   result: {
+  //     action: 'click',
+  //     x: 500,
+  //     y: 475,
+  //     ariaLabel: 'test',
+  //     args: ['test'],
+  //   },
+  //   status: 'success',
+  // } as ActionResponse;
+  console.log('actionResponse', actionResponse);
 
   // const redBox = document.createElement('div');
   // redBox.style.position = 'absolute';
@@ -66,7 +67,7 @@ export const getAction = async (params: {
 };
 
 export const performActionInDom = async (actionResponse: ActionResponse) => {
-  const { action, x, y } = actionResponse.result;
+  const { action, x, y, args } = actionResponse.result;
 
   console.log('performing action', action, x, y);
 
@@ -75,9 +76,18 @@ export const performActionInDom = async (actionResponse: ActionResponse) => {
       clickAction({ x, y });
       break;
     case 'scroll':
-      scrollAction({ direction: 'down' });
+      scrollAction({
+        direction: (() => {
+          const arg = args[1];
+          if (arg === 'up') return 'up';
+          if (arg === 'down') return 'down';
+          else return 'down';
+        })(),
+      });
       break;
-    // case
+    case 'type':
+      typeAction({ text: args[1], x, y });
+      break;
     default:
       throw new Error(`Unknown action: ${actionResponse}`);
   }

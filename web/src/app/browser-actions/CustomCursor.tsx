@@ -7,6 +7,7 @@ interface CursorProps {
   duration: number; // in milliseconds
   actionCallbackData: ActionResponse;
   clearCursorParamsCallback: () => void;
+  nextActionCallback: () => void;
 }
 
 export const CustomCursor = ({
@@ -15,6 +16,7 @@ export const CustomCursor = ({
   duration,
   actionCallbackData,
   clearCursorParamsCallback,
+  nextActionCallback,
 }: CursorProps) => {
   const cursorRef = useRef<HTMLDivElement>(null);
 
@@ -45,7 +47,12 @@ export const CustomCursor = ({
 
         setTimeout(() => {
           clearCursorParamsCallback();
-        }, 250);
+
+          // wait 5 seconds and perform the next action
+          setTimeout(() => {
+            nextActionCallback();
+          }, 5000);
+        }, 500);
       };
 
       return () => animation.cancel();
