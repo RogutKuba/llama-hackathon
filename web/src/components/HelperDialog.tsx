@@ -174,7 +174,6 @@ export const HelperDialog = (props: HelperDialogProps) => {
 
   return (
     <>
-      {/* {loading && <div className='fixed inset-0 bg-black/20 z-50' />} */}
       {cursorParams && <CustomCursor {...cursorParams} />}
       <CommandDialog open={open} onOpenChange={handleOpenChange}>
         <DialogTitle className='p-4 text-md font-medium flex items-center gap-2'>
