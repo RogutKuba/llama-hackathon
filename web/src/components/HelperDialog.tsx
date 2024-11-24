@@ -8,11 +8,7 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { DialogTitle } from '@radix-ui/react-dialog';
-import {
-  ActionResponse,
-  getAction,
-  performActionInDom,
-} from '@/query/action.query';
+import { ActionResponse, getAction } from '@/query/action.query';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { takeWindowScreenshot } from '@/lib/screenshot';
@@ -100,7 +96,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
       end: { x: actionResponse.result.x, y: actionResponse.result.y },
       duration: 1000,
       actionCallbackData: actionResponse,
-      clearCursorParamsCallback: () => {},
+      clearCursorParamsCallback: () => setCursorParams(null),
     });
 
     return actionResponse;

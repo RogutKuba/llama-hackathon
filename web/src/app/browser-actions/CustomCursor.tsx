@@ -39,12 +39,13 @@ export const CustomCursor = ({
         }
       );
 
-      console.log('ending', end);
-
       // when animation is done, perform the action
       animation.onfinish = () => {
         performActionInDom(actionCallbackData);
-        clearCursorParamsCallback();
+
+        setTimeout(() => {
+          clearCursorParamsCallback();
+        }, 250);
       };
 
       return () => animation.cancel();
