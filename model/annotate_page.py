@@ -28,3 +28,21 @@ async def mark_page(page):
         "img": base64.b64encode(screenshot).decode(),
         "bboxes": bboxes,
     }
+
+# default mark_page (no langchain). just annotates the given page
+async def mark_page_default(page):
+    await page.evaluate(mark_page_script)
+    for _ in range(10):
+        try:
+            bboxes = await page.evaluate("markPage()")
+            break
+        except Exception:
+            # May be loading...
+            asyncio.sleep(3)
+    screenshot = await page.screenshot()
+    # Ensure the bboxes don't follow us around
+    await page.evaluate("unmarkPage()")
+    return {
+        "img": base64.b64encode(screenshot).decode(),
+        "bboxes": bboxes,
+    }

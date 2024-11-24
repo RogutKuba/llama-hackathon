@@ -25,7 +25,6 @@ def format_descriptions(state):
     bbox_descriptions = "\nValid Bounding Boxes:\n" + "\n".join(labels)
     return {**state, "bbox_descriptions": bbox_descriptions}
 
-
 def parse(text: str) -> dict:
     action_prefix = "Action: "
     if not text.strip().split("\n")[-1].startswith(action_prefix):
@@ -71,6 +70,7 @@ async def call_agent(graph, question: str, page, max_steps: int = 150):
     final_answer = None
     steps = []
     async for event in event_stream:
+        breakpoint()
         # We'll display an event stream here
         if "agent" not in event:
             continue

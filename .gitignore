@@ -41,3 +41,4 @@ next-env.d.ts
 
 # make it ignore any __pycache in any dir:
 __pycache__/
+myenv

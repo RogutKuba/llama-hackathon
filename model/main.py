@@ -16,10 +16,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
 def initialize_agent():
     prompt = hub.pull("wfh/web-voyager")
-    # print(prompt.messages[0].prompt[0].template)
+    print(prompt.messages[0].prompt[0].template)
+    breakpoint()
     llm = ChatOpenAI(model="gpt-4o", max_tokens=4096)
     agent = annotate | RunnablePassthrough.assign(
         prediction=format_descriptions | prompt | llm | StrOutputParser() | parse
@@ -49,7 +49,18 @@ def initialize_graph():
     return graph_builder.compile()
 
 async def fetch_page_content_and_query(user_question: str, graph: StateGraph, page):
+    def capture_raw_prompt(graph):
+        # Add debugging logic here to extract the raw prompt from the graph or agent
+        # This assumes the graph/agent exposes the LLM prompt template
+        # Adjust according to your implementation's specifics
+        if hasattr(graph, "debug_prompt"):
+            return graph.debug_prompt
+        return "Raw prompt capture not implemented."
+
+    raw_prompt = capture_raw_prompt(graph)
+    print("RAW PROMPT USED:", raw_prompt)  # Debugging output
     response = await call_agent(graph, user_question, page)
+    # TODO: I want to see the raw prompt used to prompt the llm every time
     
     return response
 
@@ -63,9 +74,13 @@ async def main(test_question):
     # close the browser:
     await page.context.close()
 
+
+
+
 if __name__ == "__main__":
     import asyncio
     test_question = "What are some of the latest news from CBC?"
     asyncio.run(main(test_question))
     # python -m model.main
+
 

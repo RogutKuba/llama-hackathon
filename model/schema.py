@@ -29,3 +29,4 @@ class AgentState(TypedDict):
     # A system message (or messages) containing the intermediate steps
     scratchpad: List[BaseMessage]
     observation: str  # The most recent response from a tool
+
