@@ -85,8 +85,8 @@ async def search_action(user_prompt: str, coordinates: list[dict], screenshot: s
             chosen_element = coordinates[int(args[0])]
             print(f'Chosen Element: {chosen_element}')
             
-            if attempt < 4:
-                action = 'test'
+            # if attempt < 4:
+            #     action = 'test'
             # Validate the action
             if action.lower() not in ALL_ACTIONS:
                 raise ValueError(f'Invalid action: {action}')
