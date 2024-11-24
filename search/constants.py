@@ -21,7 +21,6 @@ Correspondingly, Action should STRICTLY follow the format:
 - Scroll [Numerical_Label or WINDOW]; [up or down] 
 - Wait 
 - GoBack
-- Google
 - ANSWER; [content]
 
 Key Guidelines You MUST follow:
