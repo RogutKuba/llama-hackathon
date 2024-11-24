@@ -7,6 +7,7 @@ import { CustomCursor } from '../browser-actions/CustomCursor';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { getAction } from '@/query/action.query';
+import { annotatePage } from '@/lib/markPage';
 
 export default function Home() {
   const [cursorParams, setCursorParams] = useState<{
@@ -33,11 +34,15 @@ export default function Home() {
       url: 'http://localhost:3000',
     });
 
-    setCursorParams({
-      start: { x: 100, y: 100 },
-      end: { x: action.x, y: action.y },
-      duration: 5000,
-    });
+    // setCursorParams({
+    //   start: { x: 100, y: 100 },
+    //   end: { x: action.x, y: action.y },
+    //   duration: 5000,
+    // });
+  };
+
+  const handleMarkPage = () => {
+    annotatePage();
   };
 
   return (
@@ -54,6 +59,8 @@ export default function Home() {
         </Button>
 
         <Button onClick={handleGetAction}>Get Action</Button>
+
+        <Button onClick={handleMarkPage}>Mark Page</Button>
       </div>
     </AppContainer>
   );
