@@ -16,9 +16,9 @@ class RagPipeline:
     prompt - determines what the person is looking for (part of the query for RAG)
     current_page - information in the page you have to sort through (part of the query for RAG)
     """
-    def relevant_info(self, documentation: List[str], prompt: str, current_page: str, url: str) -> str:
-        pc_index = self.chunking(documentation, url) # Returns pinecone index 
-        query = prompt + "\n" + current_page
+    def relevant_info(self, prompt: str, site_id: str) -> str:
+        pc_index = self.pc.Index("llamathon-11-23-24")
+        query = prompt 
 
         query_embed = self.co_client.embed(
             model="embed-english-v3.0",
@@ -28,23 +28,68 @@ class RagPipeline:
         ) 
 
         similar_embedding = pc_index.query(
-            namespace=url, # Look for similar documents only for that website
+            namespace=str(site_id), # Look for similar documents only for that website
             vector=query_embed.embeddings.float[0],
             top_k=1,
             include_metadata=True
         )
+
+        # Maybe add rerank later
 
         return similar_embedding['matches'][0]['metadata']['text']
     
     """
     Takes documents, embeds them, and uploads them to Pinecone so they can be used to run similarity search
     """
-    def chunking(self, documentation: List[str], website_url: str) -> Pinecone.Index:
+    def chunking(self, documentation: List[str], site_id: str) -> bool:
+        docs = []
+        for element in documentation:
+
+            # Chunking by characters
+            char_count = 0
+            old_count = 0
+            element_len = len(element['content'])
+            over_limit = False
+            for i in range(element_len):
+                char_count += 1
+                if over_limit and element['content'][char_count] == " ":
+                    docs.append(element['content'][old_count:char_count])
+                    old_count = char_count
+                    over_limit = False
+                if char_count % 500 == 0:
+                    over_limit = True
+            docs.append(element['content'][old_count:char_count])
+
+            # -------
+            # Chunking by Tokens
+
+            # response = self.co_client.tokenize(
+            #     text=element['content'],
+            #     model='command-r-plus-08-2024'
+            # )
+
+            # print(response)
+
+            # breakpoint()
+            
+            # char_count = 0
+            # final_str = ""
+            # for token_str in response['token_strings']:
+            #     final_str += token_str
+            #     char_count += len(token_str)
+            #     if char_count > 500:
+            #         docs.append(final_str)
+            #         final_str = ""
+            #         char_count = 0
+            
+            # if final_str:
+            #     docs.append(final_str)
+
         embeds = self.co_client.embed(
             model="embed-english-v3.0",
             input_type="search_document",
             embedding_types=["float"],
-            texts=documentation
+            texts=docs
         )
         pc_embeds = [] # Pinecone embeds
         for i in range(len(embeds.embeddings.float)):
@@ -57,8 +102,8 @@ class RagPipeline:
         index = self.pc.Index("llamathon-11-23-24")
         index.upsert(
             vectors=pc_embeds,
-            namespace=website_url # Used to seperate the embeddings of each website's pages 
+            namespace=str(site_id) # Used to seperate the embeddings of each website's pages 
         )
 
-        return index
+        return True
         
