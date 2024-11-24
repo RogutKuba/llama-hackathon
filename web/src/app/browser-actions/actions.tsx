@@ -9,8 +9,11 @@ export const clickAction = (params: { x: number; y: number }) => {
 };
 
 export const scrollAction = (params: { direction: 'up' | 'down' }) => {
-  // scroll the window in the direction
-  window.scrollBy(0, params.direction === 'up' ? -100 : 100);
+  // scroll the window in the direction smoothly one whole window down negative if up
+  window.scrollBy({
+    top: params.direction === 'up' ? -window.innerHeight : window.innerHeight,
+    behavior: 'smooth',
+  });
 };
 
 export const typeAction = (params: { text: string; x: number; y: number }) => {

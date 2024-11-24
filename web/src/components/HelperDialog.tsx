@@ -8,7 +8,11 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { DialogTitle } from '@radix-ui/react-dialog';
-import { ActionResponse, getAction } from '@/query/action.query';
+import {
+  ActionResponse,
+  getAction,
+  performActionInDom,
+} from '@/query/action.query';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { takeWindowScreenshot } from '@/lib/screenshot';
@@ -92,14 +96,7 @@ export const HelperDialog = (props: HelperDialogProps) => {
       return;
     }
 
-    setCursorParams({
-      start: { x: 100, y: 100 },
-      end: { x: actionResponse.result.x!, y: actionResponse.result.y! },
-      duration: 1000,
-      actionCallbackData: actionResponse,
-      clearCursorParamsCallback: () => setCursorParams(null),
-      nextActionCallback: () => takeNextAction(),
-    });
+    handleActionResponse(actionResponse);
 
     return actionResponse;
   };
@@ -138,7 +135,21 @@ export const HelperDialog = (props: HelperDialogProps) => {
     });
 
     if (!actionResponse) {
-      console.log('DONE THE LOOP');
+      return;
+    }
+
+    handleActionResponse(actionResponse);
+  };
+
+  const handleActionResponse = (actionResponse: ActionResponse) => {
+    // if action is scroll, don't animate, just perform the action
+    if (actionResponse.result.action.toLowerCase().includes('scroll')) {
+      performActionInDom(actionResponse);
+
+      // wait 2 seconds and take the next action
+      setTimeout(() => {
+        takeNextAction();
+      }, 2000);
       return;
     }
 

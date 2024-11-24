@@ -51,7 +51,7 @@ export const CustomCursor = ({
           // wait 5 seconds and perform the next action
           setTimeout(() => {
             nextActionCallback();
-          }, 5000);
+          }, 2000);
         }, 500);
       };
 
