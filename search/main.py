@@ -1,4 +1,4 @@
-from model.agent import open_browser, format_descriptions
+from model.agent import open_browser, format_descriptions_default
 from model.annotate_page import mark_page_default
 from search.constants import PREAMBLE
 from openai import OpenAI
@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 from dotenv import load_dotenv
-
+import base64
 
 load_dotenv()
 
@@ -51,7 +51,7 @@ def prompt_llm(prompt, base64_image):
                 {
                 "type": "image_url",
                 "image_url": {
-                    "url": f"data:image/jpeg;base64,{base64_image}",
+                    "url": f"{base64_image}",
                 },
                 },
             ],
@@ -64,36 +64,50 @@ def prompt_llm(prompt, base64_image):
 
 
 
-async def search_action(url, user_prompt):
-    """
-    (Pdb) parsed_response
-    {'action': 'Click', 'args': ['11']}
-    """
-    page = await open_browser(url)
-    # TODO: get total pixel of the page:
-
-    print("PAGE OPENED")
-    annotated_page = await mark_page_default(page)
-    state = format_descriptions(annotated_page)
+async def search_action(user_prompt: str, coordinates: list[dict], screenshot: str):
+    ALL_ACTIONS = ['click', 'type', 'scroll', 'wait', 'goback', 'google', 'answer']
+    MAX_RETRIES = 10  # Maximum number of retries allowed
+    bbox_descriptions = format_descriptions_default(coordinates)
     
     model_prompt = PROMPT_TEMPLATE.format(
         user_input=user_prompt,
-        bbox_descriptions=state["bbox_descriptions"]
+        bbox_descriptions=bbox_descriptions
     )
-    
-    response = prompt_llm(model_prompt, annotated_page['img'])
-    print(response)
-    parsed_response = parse(response)
-    action, args = parsed_response['action'], parsed_response['args']
-
-    print(action, args)  # 'action' and 'args'
-    chosen_element = state['bboxes'][int(args[0])]
-    print(chosen_element)
-    result = {
-        'action': action,
-        'args': args,
-        **chosen_element
-    }
+    for attempt in range(MAX_RETRIES):
+        try:
+            print(f'Attempt {attempt + 1}')
+            response = prompt_llm(model_prompt, screenshot)
+            print(f'Response: {response}')
+            parsed_response = parse(response)
+            action, args = parsed_response['action'], parsed_response['args']
+            print(f'Action: {action}\nArgs: {args}')
+            
+            chosen_element = coordinates[int(args[0])]
+            print(f'Chosen Element: {chosen_element}')
+            
+            if attempt < 4:
+                action = 'test'
+            # Validate the action
+            if action.lower() not in ALL_ACTIONS:
+                raise ValueError(f'Invalid action: {action}')
+            
+            # If all validations pass, return the result
+            result = {
+                'action': action,
+                'args': args,
+                **chosen_element
+            }
+            return result
+        except Exception as e:
+            print(f'Error on attempt {attempt + 1}: {e}')
+            if attempt < MAX_RETRIES - 1:
+                print('Retrying...')
+            else:
+                print('Maximum retries reached. Failing gracefully.')
+                return {
+                    'error': 'Unable to process action',
+                    'details': str(e)
+                }
 #     """
 #     - Click [Numerical_Label] 
 # - Type [Numerical_Label]; [Content] 
@@ -105,7 +119,6 @@ async def search_action(url, user_prompt):
 #     """
     # close the page:
     # await page.context.close()
-    return result
 
 
 
@@ -121,13 +134,24 @@ app.add_middleware(
 
 # Request model for API input
 class SearchRequest(BaseModel):
-    url: str
+    # url: str
     user_prompt: str
+    coordinates: list
+    screenshot: str
+
+    #   screenshot: string;
+#   coordinates: {
+#     x: number;
+#     y: number;
+#     type: string;
+#     text: string;
+#     ariaLabel: string;
+#   }[];
 
 # API endpoint
 @app.post("/search")
 async def search_endpoint(request: SearchRequest):
-    result = await search_action(request.url, request.user_prompt)
+    result = await search_action(request.user_prompt, request.coordinates, request.screenshot)
     return {"status": "success", "result": result}
 
 
