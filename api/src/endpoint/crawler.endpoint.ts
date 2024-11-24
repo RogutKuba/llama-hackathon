@@ -189,6 +189,9 @@ const handleCompletedEvent = async (params: {
   // send to ayush
   const res = await fetch(ctx.env.EMBEDDING_API_URL, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(
       contextChunksToSend.map((c) => ({
         id: c.id,
@@ -199,9 +202,18 @@ const handleCompletedEvent = async (params: {
   });
 
   if (!res.ok) {
-    console.error('failed to send to embedding api', res);
+    console.error(
+      'failed to send to embedding api',
+      res,
+      ctx.env.EMBEDDING_API_URL
+    );
+    const resBody = await res.text();
+    console.error('resBody from embedding api is ', resBody);
     throw new Error('failed to send to embedding api');
   }
+
+  const resBody = await res.text();
+  console.log('resBody from embedding api is ', resBody);
 
   // update the context chunks to processed
   await db

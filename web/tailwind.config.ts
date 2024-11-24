@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import colors from 'tailwindcss/colors';
 
 export default {
   darkMode: ['class'],
@@ -60,6 +61,7 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+        ...colors,
       },
       borderRadius: {
         lg: 'var(--radius)',
